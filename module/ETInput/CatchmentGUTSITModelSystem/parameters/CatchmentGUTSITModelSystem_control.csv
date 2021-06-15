@@ -1,0 +1,4 @@
+applicationYear:,2007,year of pesticide application
+verbose:,0,survival output per day (1) or end of the year only (0)
+useCSV:,0,use the slow csv input format (1) or much faster msgpack format(0)
+stepsInHr:,2,the number of steps within 1 hourly time step for the GUTS simulation
