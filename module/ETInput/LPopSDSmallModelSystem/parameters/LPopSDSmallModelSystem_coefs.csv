@@ -1,0 +1,16 @@
+Component,model-dependent,inhabitantClass
+minClutchSize:,14,minimum clutch size [ind]
+useAgeing:,1,switch DEB aging mortality on (1) or off (0)
+backgroundMortality:,0.00500,background mortality rate [d-1]
+muDD:,0.000025,(default 0.000010) density-dependent mortality rate [m2 ind-1 d-1]
+kd:,0.28512,dominant rate constant [1/d]
+hb:,0,background hazard rate [1/d]
+z:,0.05507,threshold concentration [ng/L]
+b:,0.06276,killing rate [L/(ng*d)]
+Component,model-dependent,landscapeClass
+envTav:,10.0,average temperature parameter of forcing function [oC]
+envTamp:,10.0,amplitude temperature fluctuations parameter [oC]
+envTminShift:,31.0,shift forward of daynr with lowest temperature [d]
+conversionToGutsFactor:,1000000.0,mg/L to nanogram/L
+migrationProb:,0.05,per individual probability of migration [d-1]
+downStreamProb:,0.667,probability of a migrating individual to move downstream
