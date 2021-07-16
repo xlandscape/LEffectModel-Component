@@ -42,31 +42,52 @@ class LEffectModel(base.Component):
     )
 
     # CHANGELOG
-    VERSION.added("1.2.5", "components.Lguts component")
-    VERSION.changed("1.2.5", "components.Lguts updated")
-    VERSION.fixed("1.3.8", "Fix of components.Lguts concentration input for large sets of concentrations")
-    VERSION.fixed("1.3.9", "Update of components.Lguts to fit temporal output scale of module")
-    VERSION.fixed("1.3.10", "components.Lguts for single-year runs")
-    VERSION.fixed("1.3.11", "components.Lguts temporal referencing")
-    VERSION.changed("1.3.13", "Margin of Safety outputs from components.Lguts added")
-    VERSION.fixed("1.3.14", "components.Lguts error introduced during re-factory")
-    VERSION.changed("1.3.18", "Storage of individual survival for all multiplication factors in components.Lguts")
-    VERSION.changed("1.3.24", "components.Lguts uses base function to call module")
-    VERSION.changed("1.3.27", "components.Lguts specifies scales")
-    VERSION.changed("1.3.29", "Input slicing in components.Lguts")
-    VERSION.fixed("1.3.30", "components.Lguts GUTS-SD parameterization")
-    VERSION.changed("1.3.33", "components.Lguts checks input types strictly")
-    VERSION.changed("1.3.33", "components.Lguts checks for physical units")
-    VERSION.changed("1.3.33", "components.Lguts checks for scales")
-    VERSION.changed("1.3.34", "components.Lguts renamed to components.LgutsRed")
-    VERSION.fixed("1.3.34", "Physical units of killing rate in components.LgutsRed")
-    VERSION.fixed("1.3.35", "components.LgutsRed output scale")
-    VERSION.changed("1.4.0", "components.LgutsRed renamed to LEffectModel")
-    VERSION.changed("1.4.0", "components.LgutsRed uses new LEffectModel module")
+    # noinspection SpellCheckingInspection
+    VERSION.added("1.2.5", "`components.Lguts` component")
+    # noinspection SpellCheckingInspection
+    VERSION.changed("1.2.5", "`components.Lguts` updated")
+    # noinspection SpellCheckingInspection
+    VERSION.fixed("1.3.8", "Fix of `components.Lguts` concentration input for large sets of concentrations")
+    # noinspection SpellCheckingInspection
+    VERSION.fixed("1.3.9", "Update of `components.Lguts` to fit temporal output scale of module")
+    # noinspection SpellCheckingInspection
+    VERSION.fixed("1.3.10", "`components.Lguts` for single-year runs")
+    # noinspection SpellCheckingInspection
+    VERSION.fixed("1.3.11", "`components.Lguts` temporal referencing")
+    # noinspection SpellCheckingInspection
+    VERSION.changed("1.3.13", "Margin of Safety outputs from `components.Lguts` added")
+    # noinspection SpellCheckingInspection
+    VERSION.fixed("1.3.14", "`components.Lguts` error introduced during re-factory")
+    # noinspection SpellCheckingInspection
+    VERSION.changed("1.3.18", "Storage of individual survival for all multiplication factors in `components.Lguts` ")
+    # noinspection SpellCheckingInspection
+    VERSION.changed("1.3.24", "`components.Lguts` uses base function to call module")
+    # noinspection SpellCheckingInspection
+    VERSION.changed("1.3.27", "`components.Lguts` specifies scales")
+    # noinspection SpellCheckingInspection
+    VERSION.changed("1.3.29", "Input slicing in `components.Lguts`")
+    # noinspection SpellCheckingInspection
+    VERSION.fixed("1.3.30", "`components.Lguts` GUTS-SD parameterization")
+    # noinspection SpellCheckingInspection
+    VERSION.changed("1.3.33", "`components.Lguts` checks input types strictly")
+    # noinspection SpellCheckingInspection
+    VERSION.changed("1.3.33", "`components.Lguts` checks for physical units")
+    # noinspection SpellCheckingInspection
+    VERSION.changed("1.3.33", "`components.Lguts` checks for scales")
+    # noinspection SpellCheckingInspection
+    VERSION.changed("1.3.34", "`components.Lguts` renamed to components.LgutsRed")
+    # noinspection SpellCheckingInspection
+    VERSION.fixed("1.3.34", "Physical units of killing rate in `components.LgutsRed` ")
+    # noinspection SpellCheckingInspection
+    VERSION.fixed("1.3.35", "`components.LgutsRed` output scale")
+    # noinspection SpellCheckingInspection
+    VERSION.changed("1.4.0", "`components.LgutsRed` renamed to `LEffectModel` ")
+    # noinspection SpellCheckingInspection
+    VERSION.changed("1.4.0", "`components.LgutsRed` uses new LEffectModel module")
     VERSION.changed("2.0.0", "First independent release")
     VERSION.added("2.0.1", "Changelog and release history")
     VERSION.changed("2.0.2", "Module updated to version 20201208")
-    VERSION.changed("2.0.3", "ReachListHydrography expects list of identifiers now, no longer file name")
+    VERSION.changed("2.0.3", "`ReachListHydrography` expects list of identifiers now, no longer file name")
     VERSION.fixed("2.0.3", "Determination of last year o simulation and application")
     VERSION.changed("2.0.4", "Module updated to version 20210127")
 
@@ -270,6 +291,7 @@ class LEffectModel(base.Component):
                 number_of_warm_up_years,
                 len(multiplication_factors)
             )
+            # noinspection SpellCheckingInspection
             self.store_results_per_day_and_reach(
                 os.path.join(processing_path, "ecotalk", model + "ModelSystem_Mos", "x1", "x1s{}"),
                 {
@@ -303,6 +325,7 @@ class LEffectModel(base.Component):
                     os.path.join(processing_path, "ecotalk", model + "ModelSystem_MoS.modelscript"),
                     os.path.join(processing_path, "ecotalk", model + "ModelSystem_MoS.modelscript." + str(y))
                 )
+                # noinspection SpellCheckingInspection
                 os.rename(
                     os.path.join(processing_path, "ecotalk", model + "ModelSystem_MoS"),
                     os.path.join(processing_path, "ecotalk", model + "ModelSystem_MoS_" + str(y))
@@ -328,6 +351,7 @@ class LEffectModel(base.Component):
         :param model: The identifier of the model used.
         :return: Nothing.
         """
+        # noinspection SpellCheckingInspection
         os.makedirs(os.path.join(processing_path, "ecotalk"))
         os.makedirs(os.path.join(processing_path, "ETInput", model + "ModelSystem", "parameters"))
         # noinspection SpellCheckingInspection
@@ -352,10 +376,12 @@ class LEffectModel(base.Component):
         elif model == "CatchmentGUTSSD":
             # noinspection SpellCheckingInspection
             project_name = "GUTSSD"
+            # noinspection SpellCheckingInspection
             project_type = "LGUTS"
         elif model == "CatchmentGUTSIT":
             # noinspection SpellCheckingInspection
             project_name = "GUTSIT"
+            # noinspection SpellCheckingInspection
             project_type = "LGUTS"
         else:
             raise ValueError("Unexpected model: " + model)
@@ -382,7 +408,7 @@ class LEffectModel(base.Component):
         """
         Prepares the coefficients used by the module.
         :param coefficient_file: The file path for the coefficient file.
-        :param model: The model with which LgutsRed should run.
+        :param model: The model name.
         :return: Nothing.
         """
         with open(coefficient_file, "w") as f:
@@ -586,7 +612,7 @@ class LEffectModel(base.Component):
             self._outputs[output_name].set_values(
                 np.ndarray,
                 shape=(number_days, number_multiplication_factors),
-                dtype=np.int,
+                data_type=np.int,
                 chunks=(number_days, 1),
                 scales="time/year, other/factor",
                 unit="1"
@@ -633,7 +659,7 @@ class LEffectModel(base.Component):
             self._outputs[output_name].set_values(
                 np.ndarray,
                 shape=(number_days, number_reaches, number_multiplication_factors),
-                dtype=np.int,
+                data_type=np.int,
                 chunks=(number_days, 1, 1),
                 scales="time/year, space/base_geometry, other/factor",
                 unit="1"
