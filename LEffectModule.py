@@ -17,6 +17,7 @@ class LEffectModel(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.6", "2021-07-21"),
         base.VersionInfo("2.0.5", "2021-07-16"),
         base.VersionInfo("2.0.4", "2021-02-02"),
         base.VersionInfo("2.0.3", "2021-01-23"),
@@ -91,9 +92,11 @@ class LEffectModel(base.Component):
     VERSION.changed("2.0.3", "`ReachListHydrography` expects list of identifiers now, no longer file name")
     VERSION.fixed("2.0.3", "Determination of last year o simulation and application")
     VERSION.changed("2.0.4", "Module updated to version 20210127")
-    VERSION.changed("2.0.4", "Markdown in changelog")
-    VERSION.changed("2.0.4", "Proofreading")
-    VERSION.fixed("2.0.4", "Data type access")
+    VERSION.changed("2.0.5", "Markdown in changelog")
+    VERSION.changed("2.0.5", "Proofreading")
+    VERSION.fixed("2.0.5", "Data type access")
+    VERSION.added("2.0.6", "`NumberRuns` input")
+    VERSION.changed("2.0.6", "Output scales to cover internal Monte Carlo runs")
 
     def __init__(self, name, observer, store):
         super(LEffectModel, self).__init__(name, observer, store)
