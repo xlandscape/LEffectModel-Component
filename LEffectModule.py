@@ -218,7 +218,12 @@ class LEffectModel(base.Component):
                 (attrib.Class("list[float]", 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
                 self.default_observer
             ),
-            base.Input("Verbosity", (attrib.Class(int, 1), attrib.Scales("global", 1)), self.default_observer)
+            base.Input("Verbosity", (attrib.Class(int, 1), attrib.Scales("global", 1)), self.default_observer),
+            base.Input(
+                "NumberRuns",
+                (attrib.Class(int, 1), attrib.Scales("global", 1), attrib.Unit(None)),
+                self.default_observer
+            )
         ])
         self._outputs = base.OutputContainer(self, [
             base.Output("AdultMetaPopulation", store, self),
@@ -244,6 +249,7 @@ class LEffectModel(base.Component):
         multiplication_factors = self._inputs["MultiplicationFactors"].read().values
         simulation_start = self.inputs["SimulationStart"].read().values
         number_of_warm_up_years = self._inputs["NumberOfWarmUpYears"].read().values
+        number_runs = self.inputs["NumberRuns"].read().values if model in ["LPopSD", "LPopIT"] else None
         self.prepare_runtime_environment(
             processing_path,
             (
@@ -258,7 +264,8 @@ class LEffectModel(base.Component):
             ),
             model
         )
-        self.prepare_startup_statements(os.path.join(processing_path, "startup.st"), model, multiplication_factors)
+        self.prepare_startup_statements(
+            os.path.join(processing_path, "startup.st"), model, multiplication_factors, number_runs)
         # noinspection SpellCheckingInspection
         self.prepare_coefficients(
             os.path.join(
@@ -284,31 +291,33 @@ class LEffectModel(base.Component):
             self.store_results_per_day(
                 os.path.join(processing_path, "ecotalk", model + "ModelSystem_MoS", "x1", "x1s{}"),
                 {
-                    "x1s{}r1_adultMetapop.txt": "AdultMetaPopulation",
-                    "x1s{}r1_embryoMetapop.txt": "EmbryoMetaPopulation",
-                    "x1s{}r1_extantLocalPopsMetapop.txt": "ExtentLocalPopulationsMetaPopulation",
-                    "x1s{}r1_juvAndAdultMetapop.txt": "JuvenileAndAdultMetaPopulation",
-                    "x1s{}r1_juvenileMetapop.txt": "JuvenileMetaPopulation"
+                    "x1s{}r{}_adultMetapop.txt": "AdultMetaPopulation",
+                    "x1s{}r{}_embryoMetapop.txt": "EmbryoMetaPopulation",
+                    "x1s{}r{}_extantLocalPopsMetapop.txt": "ExtentLocalPopulationsMetaPopulation",
+                    "x1s{}r{}_juvAndAdultMetapop.txt": "JuvenileAndAdultMetaPopulation",
+                    "x1s{}r{}_juvenileMetapop.txt": "JuvenileMetaPopulation"
                 },
                 simulation_start.year,
                 len(time_slices),
                 number_of_warm_up_years,
-                len(multiplication_factors)
+                len(multiplication_factors),
+                number_runs
             )
             # noinspection SpellCheckingInspection
             self.store_results_per_day_and_reach(
                 os.path.join(processing_path, "ecotalk", model + "ModelSystem_Mos", "x1", "x1s{}"),
                 {
-                    "x1s{}r1_adultPopByReach.txt": "AdultPopulationByReach",
-                    "x1s{}r1_embryoPopByReach.txt": "EmbryoPopulationByReach",
-                    "x1s{}r1_juvAndAdultPopByReach.txt": "JuvenileAndAdultPopulationByReach",
-                    "x1s{}r1_juvenilePopByReach.txt": "JuvenilePopulationByReach"
+                    "x1s{}r{}_adultPopByReach.txt": "AdultPopulationByReach",
+                    "x1s{}r{}_embryoPopByReach.txt": "EmbryoPopulationByReach",
+                    "x1s{}r{}_juvAndAdultPopByReach.txt": "JuvenileAndAdultPopulationByReach",
+                    "x1s{}r{}_juvenilePopByReach.txt": "JuvenilePopulationByReach"
                 },
                 simulation_start.year,
                 len(time_slices),
                 number_of_warm_up_years,
                 self._inputs["Concentrations"].describe()["shape"][1],
-                len(multiplication_factors)
+                len(multiplication_factors),
+                number_runs
             )
         elif model in ["CatchmentGUTSSD", "CatchmentGUTSIT"]:
             for y in range(len(time_slices)):
@@ -366,12 +375,13 @@ class LEffectModel(base.Component):
         return
 
     @staticmethod
-    def prepare_startup_statements(statements_file, model, multiplication_factors):
+    def prepare_startup_statements(statements_file, model, multiplication_factors, number_runs):
         """
         Prepares the SmallTalk statement file.
         :param statements_file: The path for the statement file.
         :param model: The identifier of the model used.
         :param multiplication_factors: A list of multiplication factors for margin-of-safety analyses.
+        :param number_runs: The number of runs to perform in a population model run.
         :return: Nothing.
         """
         if model in ["LPopSD", "LPopIT"]:
@@ -389,6 +399,8 @@ class LEffectModel(base.Component):
             project_type = "LGUTS"
         else:
             raise ValueError("Unexpected model: " + model)
+        if project_type != "LPop" and number_runs is not None:
+            raise ValueError("Number of runs may not be provided except for LPop runs")
         with open(statements_file, "w") as f:
             # noinspection SpellCheckingInspection
             f.write("| mfs scriptFile |\n")
@@ -402,8 +414,9 @@ class LEffectModel(base.Component):
             else:
                 raise ValueError("Unexpected model: " + model)
             f.write("mfs := #({}).\n".format(" ".join([str(x) for x in multiplication_factors])))
-            f.write("scriptFile := {}Project scriptMoSAnalysis{}MultiplicationFactors: mfs.\n".format(
-                project_type, project_name))
+            f.write("scriptFile := {}Project scriptMoSAnalysis{}MultiplicationFactors: mfs{}.\n".format(
+                project_type, project_name, " runs: " + str(number_runs) if project_type == "LPop" else "")
+            )
             f.write("(ModelProject fromScriptFile: scriptFile) runModelProjectForeground.\n")
             f.write("Smalltalk quitPrimitive\n")
         return
@@ -597,7 +610,8 @@ class LEffectModel(base.Component):
             first_year,
             number_years,
             number_warm_up_years,
-            number_multiplication_factors
+            number_multiplication_factors,
+            number_runs
     ):
         """
         Reads the results into the Landscape Model.
@@ -607,6 +621,7 @@ class LEffectModel(base.Component):
         :param number_years: The number of years simulated.
         :param number_warm_up_years: The number of years used to warm-up the module.
         :param number_multiplication_factors: The number of multiplication factors used for the module run.
+        :param number_runs: The number of runs of the population model.
         :return: Nothing.
         """
         number_days = (
@@ -615,24 +630,31 @@ class LEffectModel(base.Component):
         for file_name, output_name in result_set.items():
             self._outputs[output_name].set_values(
                 np.ndarray,
-                shape=(number_days, number_multiplication_factors),
+                shape=(number_days, number_multiplication_factors, number_runs),
                 data_type=np.int,
-                chunks=(number_days, 1),
-                scales="time/year, other/factor",
+                chunks=(number_days, 1, 1),
+                scales="time/year, other/factor, other/runs",
                 unit="1"
             )
             for multiplication_factor in range(1, number_multiplication_factors + 1):
-                values = np.zeros((number_days, 1), np.int)
-                with open(os.path.join(
-                        time_slice_path.format(multiplication_factor), file_name.format(multiplication_factor))) as f:
-                    for line in f:
-                        record = line[:-1].split("\t")
-                        values[int(record[0]) - 1, 0] = int(record[2])
-                self._outputs[output_name].set_values(
-                    values,
-                    slices=(slice(number_days), slice(multiplication_factor - 1, multiplication_factor)),
-                    create=False
-                )
+                for run in range(1, number_runs + 1):
+                    values = np.zeros((number_days, 1, 1), np.int)
+                    with open(os.path.join(
+                            time_slice_path.format(multiplication_factor),
+                            file_name.format(multiplication_factor, run)
+                    )) as f:
+                        for line in f:
+                            record = line[:-1].split("\t")
+                            values[int(record[0]) - 1, 0, 0] = int(record[2])
+                    self._outputs[output_name].set_values(
+                        values,
+                        slices=(
+                            slice(number_days),
+                            slice(multiplication_factor - 1, multiplication_factor),
+                            slice(run - 1, run)
+                        ),
+                        create=False
+                    )
         return
 
     def store_results_per_day_and_reach(
@@ -643,7 +665,8 @@ class LEffectModel(base.Component):
             number_years,
             number_warm_up_years,
             number_reaches,
-            number_multiplication_factors
+            number_multiplication_factors,
+            number_runs
     ):
         """
         Reads the results into the Landscape Model.
@@ -654,6 +677,7 @@ class LEffectModel(base.Component):
         :param number_warm_up_years: The number of years used to warm-up the module.
         :param number_reaches: The number of reaches simulated.
         :param number_multiplication_factors: The number of multiplication factors used for the module run.
+        :param number_runs: The number of runs of the population model.
         :return: Nothing.
         """
         number_days = (
@@ -662,28 +686,32 @@ class LEffectModel(base.Component):
         for file_name, output_name in result_set.items():
             self._outputs[output_name].set_values(
                 np.ndarray,
-                shape=(number_days, number_reaches, number_multiplication_factors),
+                shape=(number_days, number_reaches, number_multiplication_factors, number_runs),
                 data_type=np.int,
-                chunks=(number_days, 1, 1),
-                scales="time/year, space/base_geometry, other/factor",
+                chunks=(number_days, 1, 1, 1),
+                scales="time/year, space/base_geometry, other/factor, other/runs",
                 unit="1"
             )
             for multiplication_factor in range(1, number_multiplication_factors + 1):
-                values = np.zeros((number_days, number_reaches, 1), np.int)
-                with open(os.path.join(
-                        time_slice_path.format(multiplication_factor), file_name.format(multiplication_factor))) as f:
-                    for i, line in enumerate(f):
-                        record = line[:-1].split("\t")
-                        values[(int(record[0]) - 1), slice(number_reaches), 0] = [int(x) for x in record[2:]]
-                self._outputs[output_name].set_values(
-                    values,
-                    slices=(
-                        slice(number_days),
-                        slice(number_reaches),
-                        slice(multiplication_factor - 1, multiplication_factor)
-                    ),
-                    create=False
-                )
+                for run in range(1, number_runs + 1):
+                    values = np.zeros((number_days, number_reaches, 1, 1), np.int)
+                    with open(os.path.join(
+                            time_slice_path.format(multiplication_factor),
+                            file_name.format(multiplication_factor, run)
+                    )) as f:
+                        for i, line in enumerate(f):
+                            record = line[:-1].split("\t")
+                            values[(int(record[0]) - 1), slice(number_reaches), 0, 0] = [int(x) for x in record[2:]]
+                    self._outputs[output_name].set_values(
+                        values,
+                        slices=(
+                            slice(number_days),
+                            slice(number_reaches),
+                            slice(multiplication_factor - 1, multiplication_factor),
+                            slice(run - 1, run)
+                        ),
+                        create=False
+                    )
         return
 
     def store_results_per_year_and_reach(
