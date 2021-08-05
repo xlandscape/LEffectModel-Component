@@ -17,6 +17,7 @@ class LEffectModel(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.7", "2021-08-05"),
         base.VersionInfo("2.0.6", "2021-07-21"),
         base.VersionInfo("2.0.5", "2021-07-16"),
         base.VersionInfo("2.0.4", "2021-02-02"),
@@ -90,13 +91,14 @@ class LEffectModel(base.Component):
     VERSION.added("2.0.1", "Changelog and release history")
     VERSION.changed("2.0.2", "Module updated to version 20201208")
     VERSION.changed("2.0.3", "`ReachListHydrography` expects list of identifiers now, no longer file name")
-    VERSION.fixed("2.0.3", "Determination of last year o simulation and application")
+    VERSION.fixed("2.0.3", "Determination of last year of simulation and application")
     VERSION.changed("2.0.4", "Module updated to version 20210127")
     VERSION.changed("2.0.5", "Markdown in changelog")
     VERSION.changed("2.0.5", "Proofreading")
     VERSION.fixed("2.0.5", "Data type access")
     VERSION.added("2.0.6", "`NumberRuns` input")
     VERSION.changed("2.0.6", "Output scales to cover internal Monte Carlo runs")
+    VERSION.added("2.0.7", "`Reaches` output")
 
     def __init__(self, name, observer, store):
         super(LEffectModel, self).__init__(name, observer, store)
@@ -238,7 +240,8 @@ class LEffectModel(base.Component):
             base.Output("JuvenileAndAdultPopulationByReach", store, self),
             base.Output("JuvenileMetaPopulation", store, self),
             base.Output("JuvenilePopulationByReach", store, self),
-            base.Output("GutsSurvivalReaches", store, self)
+            base.Output("GutsSurvivalReaches", store, self),
+            base.Output("Reaches", store, self)
         ])
         return
 
@@ -489,13 +492,13 @@ class LEffectModel(base.Component):
         :param reaches_file: The file path for the reach list.
         :return: Nothing.
         """
-        reaches = self.inputs["ReachListHydrography"].read().values
+        reaches = self.inputs["ReachListHydrography"].read()
         driver = ogr.GetDriverByName("ESRI Shapefile")
         reach_list_data_source = driver.CreateDataSource(reaches_file)
         reach_list_layer = reach_list_data_source.CreateLayer("reaches", None, ogr.wkbPoint)
         reach_list_layer.CreateField(ogr.FieldDefn("key", ogr.OFTInteger))
         reach_list_layer_definition = reach_list_layer.GetLayerDefn()
-        for i, feature in enumerate(reaches):
+        for i, feature in enumerate(reaches.values):
             reach = ogr.Feature(reach_list_layer_definition)
             first_point = ogr.Geometry(ogr.wkbPoint)
             first_point.AddPoint(0, 0, 0)
@@ -503,6 +506,7 @@ class LEffectModel(base.Component):
             reach_id = feature
             reach.SetField("key", reach_id)
             reach_list_layer.CreateFeature(reach)
+        self.outputs["Reaches"].set_values(reaches.values, scales=reaches.scales)
         return
 
     def get_time_slices(self):
