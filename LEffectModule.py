@@ -17,6 +17,7 @@ class LEffectModel(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.7", "2021-08-05"),
         base.VersionInfo("2.0.6", "2021-07-21"),
         base.VersionInfo("2.0.5", "2021-07-16"),
         base.VersionInfo("2.0.4", "2021-02-02"),
@@ -97,6 +98,7 @@ class LEffectModel(base.Component):
     VERSION.fixed("2.0.5", "Data type access")
     VERSION.added("2.0.6", "`NumberRuns` input")
     VERSION.changed("2.0.6", "Output scales to cover internal Monte Carlo runs")
+    VERSION.added("2.0.7", "`Reaches` output")
 
     def __init__(self, name, observer, store):
         super(LEffectModel, self).__init__(name, observer, store)
