@@ -654,7 +654,7 @@ class LEffectModel(base.Component):
                 shape=(number_days, number_multiplication_factors, number_runs),
                 data_type=np.int,
                 chunks=(number_days, 1, 1),
-                scales="time/year, other/factor, other/runs",
+                scales="time/day, other/factor, other/runs",
                 unit="1"
             )
             for multiplication_factor in range(1, number_multiplication_factors + 1):
@@ -713,7 +713,7 @@ class LEffectModel(base.Component):
                 shape=(number_days, number_reaches, number_multiplication_factors, number_runs),
                 data_type=np.int,
                 chunks=(number_days, 1, 1, 1),
-                scales="time/year, space/base_geometry, other/factor, other/runs",
+                scales="time/day, space/base_geometry, other/factor, other/runs",
                 unit="1"
             )
             for multiplication_factor in range(1, number_multiplication_factors + 1):
