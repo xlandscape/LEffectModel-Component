@@ -17,6 +17,7 @@ class LEffectModel(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.8", "2021-08-16"),
         base.VersionInfo("2.0.7", "2021-08-05"),
         base.VersionInfo("2.0.6", "2021-07-21"),
         base.VersionInfo("2.0.5", "2021-07-16"),
@@ -99,6 +100,7 @@ class LEffectModel(base.Component):
     VERSION.added("2.0.6", "`NumberRuns` input")
     VERSION.changed("2.0.6", "Output scales to cover internal Monte Carlo runs")
     VERSION.added("2.0.7", "`Reaches` output")
+    VERSION.fixed("2.0.8", "`Temporal scale of some outputs")
 
     def __init__(self, name, observer, store):
         super(LEffectModel, self).__init__(name, observer, store)
@@ -214,6 +216,11 @@ class LEffectModel(base.Component):
                 self.default_observer
             ),
             base.Input(
+                "RecoveryPeriodYears",
+                (attrib.Class(int), attrib.Unit("y"), attrib.Scales("global")),
+                self.default_observer
+            ),
+            base.Input(
                 "NumberOfStepsWithinOneHour",
                 (attrib.Class(int, 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
                 self.default_observer
@@ -255,6 +262,7 @@ class LEffectModel(base.Component):
         multiplication_factors = self._inputs["MultiplicationFactors"].read().values
         simulation_start = self.inputs["SimulationStart"].read().values
         number_of_warm_up_years = self._inputs["NumberOfWarmUpYears"].read().values
+        recovery_period_years = self.inputs["RecoveryPeriodYears"].read().values
         number_runs = self.inputs["NumberRuns"].read().values if model in ["LPopSD", "LPopIT"] else None
         self.prepare_runtime_environment(
             processing_path,
@@ -290,7 +298,8 @@ class LEffectModel(base.Component):
                 os.path.join(
                     processing_path, "ETInput", model + "ModelSystem", "parameters", model + "ModelSystem_control.csv"),
                 simulation_start,
-                number_of_warm_up_years
+                number_of_warm_up_years,
+                recovery_period_years
             )
             self.run_module(processing_path)
             # noinspection SpellCheckingInspection
@@ -306,6 +315,7 @@ class LEffectModel(base.Component):
                 simulation_start.year,
                 len(time_slices),
                 number_of_warm_up_years,
+                recovery_period_years,
                 len(multiplication_factors),
                 number_runs
             )
@@ -321,6 +331,7 @@ class LEffectModel(base.Component):
                 simulation_start.year,
                 len(time_slices),
                 number_of_warm_up_years,
+                recovery_period_years,
                 self._inputs["Concentrations"].describe()["shape"][1],
                 len(multiplication_factors),
                 number_runs
@@ -568,12 +579,14 @@ class LEffectModel(base.Component):
         base.run_process((squeak, "LPop.image", "startup.st"), processing_path, self.default_observer)
         return
 
-    def prepare_control_population_model(self, control_file, simulation_start, number_of_warm_up_years):
+    def prepare_control_population_model(
+            self, control_file, simulation_start, number_of_warm_up_years, recovery_period_year):
         """
         Prepares the control file.
         :param control_file: The name of the control file.
         :param simulation_start: The first day of the simulation.
         :param number_of_warm_up_years: The number of years used to warm-up the module.
+        :param recovery_period_year: The number of years added as recovery period to the simulation.
         :return: Nothing.
         """
         number_hours = self.inputs["Concentrations"].describe()["shape"][0]
@@ -581,7 +594,7 @@ class LEffectModel(base.Component):
             f.write("startYear:,{},start year of the simulation\n".format(
                 simulation_start.year - number_of_warm_up_years))
             f.write("endYear:,{},last year of the simulation\n".format(
-                (simulation_start + datetime.timedelta(number_hours / 24 - 1)).year))
+                (simulation_start + datetime.timedelta(number_hours / 24 - 1)).year + recovery_period_year))
             f.write("startApplicationYear:,{},start year of pesticide application\n".format(simulation_start.year))
             f.write("endApplicationYear:,{},last year of pesticide application\n".format(
                 (simulation_start + datetime.timedelta(number_hours / 24 - 1)).year))
@@ -617,6 +630,7 @@ class LEffectModel(base.Component):
             first_year,
             number_years,
             number_warm_up_years,
+            recovery_period_years,
             number_multiplication_factors,
             number_runs
     ):
@@ -627,12 +641,14 @@ class LEffectModel(base.Component):
         :param first_year: The first year of the simulation as an integer number.
         :param number_years: The number of years simulated.
         :param number_warm_up_years: The number of years used to warm-up the module.
+        :param recovery_period_years: The number of years added as recovery period to the simulation.
         :param number_multiplication_factors: The number of multiplication factors used for the module run.
         :param number_runs: The number of runs of the population model.
         :return: Nothing.
         """
         number_days = (
-                datetime.date(first_year + number_years, 1, 1) - datetime.date(first_year - number_warm_up_years, 1, 1)
+                datetime.date(first_year + number_years + recovery_period_years, 1, 1) -
+                datetime.date(first_year - number_warm_up_years, 1, 1)
         ).days
         for file_name, output_name in result_set.items():
             self._outputs[output_name].set_values(
@@ -640,7 +656,7 @@ class LEffectModel(base.Component):
                 shape=(number_days, number_multiplication_factors, number_runs),
                 data_type=np.int,
                 chunks=(number_days, 1, 1),
-                scales="time/year, other/factor, other/runs",
+                scales="time/day, other/factor, other/runs",
                 unit="1"
             )
             for multiplication_factor in range(1, number_multiplication_factors + 1):
@@ -671,6 +687,7 @@ class LEffectModel(base.Component):
             first_year,
             number_years,
             number_warm_up_years,
+            recovery_period_years,
             number_reaches,
             number_multiplication_factors,
             number_runs
@@ -682,13 +699,15 @@ class LEffectModel(base.Component):
         :param first_year: The first year of the simulation as an integer number.
         :param number_years: The number of years simulated.
         :param number_warm_up_years: The number of years used to warm-up the module.
+        :param recovery_period_years: The number of years added as recovery period to the simulation.
         :param number_reaches: The number of reaches simulated.
         :param number_multiplication_factors: The number of multiplication factors used for the module run.
         :param number_runs: The number of runs of the population model.
         :return: Nothing.
         """
         number_days = (
-                datetime.date(first_year + number_years, 1, 1) - datetime.date(first_year - number_warm_up_years, 1, 1)
+                datetime.date(first_year + number_years + recovery_period_years, 1, 1) -
+                datetime.date(first_year - number_warm_up_years, 1, 1)
         ).days
         for file_name, output_name in result_set.items():
             self._outputs[output_name].set_values(
@@ -696,7 +715,7 @@ class LEffectModel(base.Component):
                 shape=(number_days, number_reaches, number_multiplication_factors, number_runs),
                 data_type=np.int,
                 chunks=(number_days, 1, 1, 1),
-                scales="time/year, space/base_geometry, other/factor, other/runs",
+                scales="time/day, space/base_geometry, other/factor, other/runs",
                 unit="1"
             )
             for multiplication_factor in range(1, number_multiplication_factors + 1):
