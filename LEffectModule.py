@@ -17,6 +17,7 @@ class LEffectModel(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.9", "2021-08-18"),
         base.VersionInfo("2.0.8", "2021-08-16"),
         base.VersionInfo("2.0.7", "2021-08-05"),
         base.VersionInfo("2.0.6", "2021-07-21"),
@@ -44,6 +45,26 @@ class LEffectModel(base.Component):
         base.VersionInfo("1.2.37", None),
         base.VersionInfo("1.2.5", None)
     )
+
+    # AUTHORS
+    VERSION.authors.extend((
+        "Sascha Bub (component) - sascha.bub@gmx.de",
+        "Thorsten Schad (component) - thorsten.schad@bayer.com",
+        "Hans Baveco (module) - hans.baveco@wur.nl"
+    ))
+
+    # ACKNOWLEDGEMENTS
+    VERSION.acknowledgements.extend((
+        "[MessagePack](https://msgpack.org)",
+        "[NumPy](https://numpy.org)"
+    ))
+
+    # ROADMAP
+    VERSION.roadmap.extend((
+        """Start module GUI in background 
+        ([#2](https://gitlab.bayer.com/aqrisk-landscape/leffectmodel-component/-/issues/2))""",
+        "Numbering of reaches ([#4](https://gitlab.bayer.com/aqrisk-landscape/leffectmodel-component/-/issues/4))"
+    ))
 
     # CHANGELOG
     # noinspection SpellCheckingInspection
@@ -79,7 +100,7 @@ class LEffectModel(base.Component):
     # noinspection SpellCheckingInspection
     VERSION.changed("1.3.33", "`components.Lguts` checks for scales")
     # noinspection SpellCheckingInspection
-    VERSION.changed("1.3.34", "`components.Lguts` renamed to components.LgutsRed")
+    VERSION.changed("1.3.34", "`components.Lguts` renamed to `components.LgutsRed` ")
     # noinspection SpellCheckingInspection
     VERSION.fixed("1.3.34", "Physical units of killing rate in `components.LgutsRed` ")
     # noinspection SpellCheckingInspection
@@ -100,106 +121,145 @@ class LEffectModel(base.Component):
     VERSION.added("2.0.6", "`NumberRuns` input")
     VERSION.changed("2.0.6", "Output scales to cover internal Monte Carlo runs")
     VERSION.added("2.0.7", "`Reaches` output")
-    VERSION.fixed("2.0.8", "`Temporal scale of some outputs")
+    VERSION.fixed("2.0.8", "Temporal scale of some outputs")
+    VERSION.added("2.0.9", "Base documentation")
 
     def __init__(self, name, observer, store):
         super(LEffectModel, self).__init__(name, observer, store)
-        self._module = base.Module("LEffectModel", "20201208")
+        self._module = base.Module("LEffectModel", "20201208", r"\module\doc\LEffectModel_Manual.pdf")
         self._inputs = base.InputContainer(self, [
             base.Input(
                 "ProcessingPath",
                 (attrib.Class(str, 1), attrib.Unit(None, 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="""The working directory for the module. It is used for all files prepared as module inputs
+                or generated as (temporary) module outputs."""
             ),
             base.Input(
                 "Model",
-                (attrib.Class(str, 1), attrib.Unit(None, 1), attrib.Scales("global", 1)),
-                self.default_observer
+                (
+                    attrib.Class(str, 1),
+                    attrib.Unit(None, 1),
+                    attrib.Scales("global", 1),
+                    attrib.InList(("CatchmentGUTSSD", "CatchmentGUTSIT", "LPopSD", "LPopIT"))
+                ),
+                self.default_observer,
+                description="""Specifies the model that is applied to the input data. This can either be an individual
+                based GUTS model (choices starting with _CatchmentGUTS_) or a population based effect model (choices
+                starting with _LPop_). The choice of model also determines whether sudden death (choices ending with 
+                _SD_) or an internal threshold (choices ending with _IT_) is assumed."""
             ),
             base.Input(
                 "MinimumClutchSize",
                 (attrib.Class(int, 1), attrib.Unit(None, 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="The minimum clutch size (minClutchSize) used by population models."
             ),
             base.Input(
                 "BackgroundMortalityRate",
                 (attrib.Class(float, 1), attrib.Unit("1/d", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="The background mortality rate (backgroundMortality) used by population models."
             ),
             base.Input(
                 "DensityDependentMortalityRate",
                 (attrib.Class(float, 1), attrib.Unit("m²/d", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="The density-dependent mortality rate (muDD) used by population models."
             ),
             base.Input(
                 "DominantRateConstant",
                 (attrib.Class(float, 1), attrib.Unit("1/d", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="The dominant rate constant (kd) used by all models."
             ),
             base.Input(
                 "BackgroundHazardRate",
                 (attrib.Class(float, 1), attrib.Unit("1/d", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="The background hazard rate (hb) used by all models."
             ),
             base.Input(
                 "ParameterZOfSDModel",
                 (attrib.Class(float, 1), attrib.Unit("ng/l", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="The threshold concentration (z) used by sudden death models."
             ),
             base.Input(
                 "ParameterBOfSDModel",
                 (attrib.Class(float, 1), attrib.Unit("l/(ng*d)"), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="The killing rate (b) used by sudden death models."
             ),
             base.Input(
                 "ThresholdOfITModel",
                 (attrib.Class(float, 1), attrib.Unit("ng/l", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="The threshold distribution  (m) used by internal threshold models."
             ),
             base.Input(
                 "BetaOfITModel",
                 (attrib.Class(float, 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="The width of distribution (beta) used by internal threshold models."
             ),
             base.Input(
                 "AverageTemperatureParameterOfForcingFunction",
                 (attrib.Class(float, 1), attrib.Unit("°C", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="""The average temperature parameter of the forcing function (envTav) used by population
+                models."""
             ),
             base.Input(
                 "AmplitudeTemperatureFluctuationsParameter",
                 (attrib.Class(float, 1), attrib.Unit("°C", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="""The amplitude temperature fluctuations parameter of the forcing function (envTamp) used
+                by population models."""
             ),
             base.Input(
                 "ShiftForwardOfDayNumberWithLowestTemperature",
                 (attrib.Class(int, 1), attrib.Unit("d", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="""The temporal shift forward with the lowest temperature (envTMinShift) used by population
+                models."""
             ),
             base.Input(
                 "PerIndividualProbabilityOfMigration",
                 (attrib.Class(float, 1), attrib.Unit("1/d", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="""The probability of an individual to migrate to an adjacent reach (migrationProb) used by
+                population models."""
             ),
             base.Input(
                 "ProbabilityOfAMigratingIndividualToMoveDownstream",
                 (attrib.Class(float, 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="""The probability of a migrating individual to migrate to the downstream reach (instead of
+                the upstream reach; downStreamProb) used by population models."""
             ),
             base.Input(
                 "ReachListHydrography",
                 (attrib.Class("list[int]", 1), attrib.Unit(None, 1), attrib.Scales("space/base_geometry", 1)),
-                self.default_observer
+                self.default_observer,
+                description="""The numeric identifiers for individual reaches (in the order of the scenario hydrography 
+                input) that apply scenario-wide. This is a temporary solution to ensure outputs to be in original 
+                scenario data order."""
             ),
             base.Input(
                 "SimulationStart",
                 (attrib.Class(datetime.date, 1), attrib.Unit(None, 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="""The first time step for which concentration input data is provided. This input also 
+                defines the base year for LEffectModel simulations. Actual simulation starts `NumberOfWarmUpYears`
+                earlier and ends `RecoveryPeriodYears` later."""
             ),
             base.Input(
                 "ReachListConcentrations",
                 (attrib.Class("list[int]", 1), attrib.Unit(None, 1), attrib.Scales("space/reach", 1)),
-                self.default_observer
+                self.default_observer,
+                description="""The numeric identifiers for individual reaches (in the order of the `Concentrations` 
+                input) that apply scenario-wide."""
             ),
             base.Input(
                 "Concentrations",
@@ -208,47 +268,241 @@ class LEffectModel(base.Component):
                     attrib.Unit("ng/l", 1),
                     attrib.Scales("time/hour, space/base_geometry", 1)
                 ),
-                self.default_observer
+                self.default_observer,
+                description="""The substance concentrations reported starting with the `SimulationStart`.
+                Concentrations during the warm-up years and during the recovery period are assumed to be globally 
+                zero."""
             ),
             base.Input(
                 "NumberOfWarmUpYears",
                 (attrib.Class(int, 1), attrib.Unit("y", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="The number of years the module runs before the year of the `SimulationStart`."
             ),
             base.Input(
                 "RecoveryPeriodYears",
                 (attrib.Class(int), attrib.Unit("y"), attrib.Scales("global")),
-                self.default_observer
+                self.default_observer,
+                description="""The number of years the module runs after the last year for which `Concentration` data is
+                available."""
             ),
             base.Input(
                 "NumberOfStepsWithinOneHour",
                 (attrib.Class(int, 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="The number of steps within one hour used by the GUTS simulation."
             ),
             base.Input(
                 "MultiplicationFactors",
                 (attrib.Class("list[float]", 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
-                self.default_observer
+                self.default_observer,
+                description="""The multiplication factors applied to enable LP50 analyses. Include a factor of 1 for
+                simulations returning unscaled LEffectModel results."""
             ),
             base.Input("Verbosity", (attrib.Class(int, 1), attrib.Scales("global", 1)), self.default_observer),
             base.Input(
                 "NumberRuns",
                 (attrib.Class(int, 1), attrib.Scales("global", 1), attrib.Unit(None)),
-                self.default_observer
+                self.default_observer,
+                description="The number of internal Monte Carlo runs performed by the module."
             )
         ])
         self._outputs = base.OutputContainer(self, [
-            base.Output("AdultMetaPopulation", store, self),
-            base.Output("AdultPopulationByReach", store, self),
-            base.Output("EmbryoMetaPopulation", store, self),
-            base.Output("EmbryoPopulationByReach", store, self),
-            base.Output("ExtentLocalPopulationsMetaPopulation", store, self),
-            base.Output("JuvenileAndAdultMetaPopulation", store, self),
-            base.Output("JuvenileAndAdultPopulationByReach", store, self),
-            base.Output("JuvenileMetaPopulation", store, self),
-            base.Output("JuvenilePopulationByReach", store, self),
-            base.Output("GutsSurvivalReaches", store, self),
-            base.Output("Reaches", store, self)
+            base.Output(
+                "AdultMetaPopulation",
+                store,
+                self,
+                {"data_type": np.int, "scales": "time/day, other/factor, other/runs", "unit": "1"},
+                "The total number of all adults.",
+                {
+                    "type": np.ndarray,
+                    "shape": (
+                        """the total number of days in the years at least partly covered by the 
+                        [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
+                        the recovery period""",
+                        "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
+                        "the `NumberRuns`"
+                    ),
+                    "chunks": "for fast retrieval of time series"
+                }
+            ),
+            base.Output(
+                "AdultPopulationByReach",
+                store,
+                self,
+                {"data_type": np.int, "scales": "time/day, space/base_geometry, other/factor, other/runs", "unit": "1"},
+                "The number of adults.",
+                {
+                    "type": np.ndarray,
+                    "shape": (
+                        """the total number of days in the years at least partly covered by the 
+                        [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
+                        the recovery period""",
+                        "the number of reaches reported by the [Concentrations](#Concentrations) input",
+                        "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
+                        "the `NumberRuns`"
+                    ),
+                    "chunks": "for fast retrieval of time series"
+                }
+            ),
+            base.Output(
+                "EmbryoMetaPopulation",
+                store,
+                self,
+                {"data_type": np.int, "scales": "time/day, other/factor, other/runs", "unit": "1"},
+                "The total number of all embryos.",
+                {
+                    "type": np.ndarray,
+                    "shape": (
+                        """the total number of days in the years at least partly covered by the 
+                        [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
+                        the recovery period""",
+                        "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
+                        "the `NumberRuns`"
+                    ),
+                    "chunks": "for fast retrieval of time series"
+                }
+            ),
+            base.Output(
+                "EmbryoPopulationByReach",
+                store,
+                self,
+                {"data_type": np.int, "scales": "time/day, space/base_geometry, other/factor, other/runs", "unit": "1"},
+                "The number of embryos.",
+                {
+                    "type": np.ndarray,
+                    "shape": (
+                        """the total number of days in the years at least partly covered by the 
+                        [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
+                        the recovery period""",
+                        "the number of reaches reported by the [Concentrations](#Concentrations) input",
+                        "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
+                        "the `NumberRuns`"
+                    ),
+                    "chunks": "for fast retrieval of time series"
+                }
+            ),
+            base.Output(
+                "ExtantLocalPopulationsMetaPopulation",
+                store,
+                self,
+                {"data_type": np.int, "scales": "time/day, other/factor, other/runs", "unit": "1"},
+                "The total number of populations that went extant.",
+                {
+                    "type": np.ndarray,
+                    "shape": (
+                        """the total number of days in the years at least partly covered by the 
+                        [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
+                        the recovery period""",
+                        "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
+                        "the `NumberRuns`"
+                    ),
+                    "chunks": "for fast retrieval of time series"
+                }
+            ),
+            base.Output(
+                "JuvenileAndAdultMetaPopulation",
+                store,
+                self,
+                {"data_type": np.int, "scales": "time/day, other/factor, other/runs", "unit": "1"},
+                "The total number of all adults and juveniles combined.",
+                {
+                    "type": np.ndarray,
+                    "shape": (
+                        """the total number of days in the years at least partly covered by the 
+                        [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
+                        the recovery period""",
+                        "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
+                        "the `NumberRuns`"
+                    ),
+                    "chunks": "for fast retrieval of time series"
+                }
+            ),
+            base.Output(
+                "JuvenileAndAdultPopulationByReach",
+                store,
+                self,
+                {"data_type": np.int, "scales": "time/day, space/base_geometry, other/factor, other/runs", "unit": "1"},
+                "The number of juveniles and adults combined.",
+                {
+                    "type": np.ndarray,
+                    "shape": (
+                        """the total number of days in the years at least partly covered by the 
+                        [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
+                        the recovery period""",
+                        "the number of reaches reported by the [Concentrations](#Concentrations) input",
+                        "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
+                        "the `NumberRuns`"
+                    ),
+                    "chunks": "for fast retrieval of time series"
+                }
+            ),
+            base.Output(
+                "JuvenileMetaPopulation",
+                store,
+                self,
+                {"data_type": np.int, "scales": "time/day, other/factor, other/runs", "unit": "1"},
+                "The total number of all juveniles.",
+                {
+                    "type": np.ndarray,
+                    "shape": (
+                        """the total number of days in the years at least partly covered by the 
+                        [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
+                        the recovery period""",
+                        "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
+                        "the `NumberRuns`"
+                    ),
+                    "chunks": "for fast retrieval of time series"
+                }
+            ),
+            base.Output(
+                "JuvenilePopulationByReach",
+                store,
+                self,
+                {"data_type": np.int, "scales": "time/day, space/base_geometry, other/factor, other/runs", "unit": "1"},
+                "The number of juveniles.",
+                {
+                    "type": np.ndarray,
+                    "shape": (
+                        """the total number of days in the years at least partly covered by the 
+                        [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
+                        the recovery period""",
+                        "the number of reaches reported by the [Concentrations](#Concentrations) input",
+                        "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
+                        "the `NumberRuns`"
+                    ),
+                    "chunks": "for fast retrieval of time series"
+                }
+            ),
+            base.Output(
+                "GutsSurvivalReaches",
+                store,
+                self,
+                {"scales": "time/year, space/base_geometry, other/factor", "unit": "1"},
+                "The probability of an individual to survive.",
+                {
+                    "type": np.ndarray,
+                    "data_type": np.float,
+                    "shape": (
+                        """the number of years at least partly covered by the [Concentrations](#Concentrations) input 
+                        plus the number of years of the warm-up period plus the number of years of the recovery 
+                        period""",
+                        "the number of reaches reported by the [Concentrations](#Concentrations) input",
+                        "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input"
+                    ),
+                    "chunks": "for allowing compression (only one chunk used)"
+                }
+            ),
+            base.Output(
+                "Reaches",
+                store,
+                self,
+                {"unit": None},
+                "The numerical identifiers of the reaches in the order presented by the various outputs.",
+                {
+                    "type": "same as of the [ReachListHydrography](#ReachListHydrography) input"
+                }
+            )
         ])
         return
 
@@ -308,7 +562,7 @@ class LEffectModel(base.Component):
                 {
                     "x1s{}r{}_adultMetapop.txt": "AdultMetaPopulation",
                     "x1s{}r{}_embryoMetapop.txt": "EmbryoMetaPopulation",
-                    "x1s{}r{}_extantLocalPopsMetapop.txt": "ExtentLocalPopulationsMetaPopulation",
+                    "x1s{}r{}_extantLocalPopsMetapop.txt": "ExtantLocalPopulationsMetaPopulation",
                     "x1s{}r{}_juvAndAdultMetapop.txt": "JuvenileAndAdultMetaPopulation",
                     "x1s{}r{}_juvenileMetapop.txt": "JuvenileMetaPopulation"
                 },
@@ -654,10 +908,7 @@ class LEffectModel(base.Component):
             self._outputs[output_name].set_values(
                 np.ndarray,
                 shape=(number_days, number_multiplication_factors, number_runs),
-                data_type=np.int,
-                chunks=(number_days, 1, 1),
-                scales="time/day, other/factor, other/runs",
-                unit="1"
+                chunks=(number_days, 1, 1)
             )
             for multiplication_factor in range(1, number_multiplication_factors + 1):
                 for run in range(1, number_runs + 1):
@@ -713,10 +964,7 @@ class LEffectModel(base.Component):
             self._outputs[output_name].set_values(
                 np.ndarray,
                 shape=(number_days, number_reaches, number_multiplication_factors, number_runs),
-                data_type=np.int,
-                chunks=(number_days, 1, 1, 1),
-                scales="time/day, space/base_geometry, other/factor, other/runs",
-                unit="1"
+                chunks=(number_days, 1, 1, 1)
             )
             for multiplication_factor in range(1, number_multiplication_factors + 1):
                 for run in range(1, number_runs + 1):
@@ -759,9 +1007,5 @@ class LEffectModel(base.Component):
                         record = line.replace("\n", "").split("\t")
                         values[y, i, slice(number_multiplication_factors)] = [float(x) for x in record]
             self._outputs[output_name].set_values(
-                values,
-                chunks=(number_years, number_reaches, number_multiplication_factors),
-                scales="time/year, space/base_geometry, other/factor",
-                unit="1"
-            )
+                values, chunks=(number_years, number_reaches, number_multiplication_factors))
         return
