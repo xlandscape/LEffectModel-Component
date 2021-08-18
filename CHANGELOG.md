@@ -1,6 +1,16 @@
 # Changelog
 This is the changelog for the LEffectModel component. It was automatically created on 2021-08-18.
 
+## [2.0.9] - 2021-08-18
+
+### Added
+- Base documentation
+
+### Changed
+
+### Fixed
+
+
 ## [2.0.8] - 2021-08-16
 
 ### Added
@@ -8,7 +18,7 @@ This is the changelog for the LEffectModel component. It was automatically creat
 ### Changed
 
 ### Fixed
-- `Temporal scale of some outputs
+- Temporal scale of some outputs
 
 
 ## [2.0.7] - 2021-08-05
