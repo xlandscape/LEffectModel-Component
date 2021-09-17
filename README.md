@@ -17,15 +17,15 @@
 ## About the project
 Encapsulation of the LEffectModel module as a Landscape Model component.  
 This is an automatically generated documentation based on the available code and in-line documentation. The current
-version of this document is from 2021-08-18.  
+version of this document is from 2021-09-17.  
 
 ### Built with
-* Landscape Model core version 1.5.7
+* Landscape Model core version 1.7
 * LEffectModel version 20201208 (see `\module\doc\LEffectModel_Manual.pdf` for details)
 
 
 ## Getting Started
-The component can be used in any Landscape Model based on core version 1.5.7 or newer. See the Landscape Model
+The component can be used in any Landscape Model based on core version 1.7 or newer. See the Landscape Model
 core's `README` for general tips on how to add a component to a Landscape Model.
 
 ### Prerequisites
@@ -211,7 +211,7 @@ Values have to refer to the `global` scale.
 The numeric identifiers for individual reaches (in the order of the scenario hydrography 
 input) that apply scenario-wide. This is a temporary solution to ensure outputs to be in original 
 scenario data order.  
-`ReachListHydrography` expects its values to be of type `list[int]`.
+`ReachListHydrography` expects its values to be of type `list`.
 Values of the `ReachListHydrography` input may not have a physical unit.
 Values have to refer to the `space/base_geometry` scale.
 
@@ -226,7 +226,7 @@ Values have to refer to the `global` scale.
 #### ReachListConcentrations
 The numeric identifiers for individual reaches (in the order of the `Concentrations` 
 input) that apply scenario-wide.  
-`ReachListConcentrations` expects its values to be of type `list[int]`.
+`ReachListConcentrations` expects its values to be of type `list`.
 Values of the `ReachListConcentrations` input may not have a physical unit.
 Values have to refer to the `space/reach` scale.
 
@@ -260,7 +260,7 @@ Values have to refer to the `global` scale.
 #### MultiplicationFactors
 The multiplication factors applied to enable LP50 analyses. Include a factor of 1 for
 simulations returning unscaled LEffectModel results.  
-`MultiplicationFactors` expects its values to be of type `list[float]`.
+`MultiplicationFactors` expects its values to be of type `list`.
 The physical unit of the `MultiplicationFactors` input values is `1`.
 Values have to refer to the `global` scale.
 
