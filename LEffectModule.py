@@ -17,6 +17,7 @@ class LEffectModel(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.10", "2021-09-17"),
         base.VersionInfo("2.0.9", "2021-08-18"),
         base.VersionInfo("2.0.8", "2021-08-16"),
         base.VersionInfo("2.0.7", "2021-08-05"),
@@ -123,6 +124,7 @@ class LEffectModel(base.Component):
     VERSION.added("2.0.7", "`Reaches` output")
     VERSION.fixed("2.0.8", "Temporal scale of some outputs")
     VERSION.added("2.0.9", "Base documentation")
+    VERSION.changed("2.0.10", "Make use of generic types for class attributes")
 
     def __init__(self, name, observer, store):
         super(LEffectModel, self).__init__(name, observer, store)
@@ -240,7 +242,7 @@ class LEffectModel(base.Component):
             ),
             base.Input(
                 "ReachListHydrography",
-                (attrib.Class("list[int]", 1), attrib.Unit(None, 1), attrib.Scales("space/base_geometry", 1)),
+                (attrib.Class(list[int], 1), attrib.Unit(None, 1), attrib.Scales("space/base_geometry", 1)),
                 self.default_observer,
                 description="""The numeric identifiers for individual reaches (in the order of the scenario hydrography 
                 input) that apply scenario-wide. This is a temporary solution to ensure outputs to be in original 
@@ -256,7 +258,7 @@ class LEffectModel(base.Component):
             ),
             base.Input(
                 "ReachListConcentrations",
-                (attrib.Class("list[int]", 1), attrib.Unit(None, 1), attrib.Scales("space/reach", 1)),
+                (attrib.Class(list[int], 1), attrib.Unit(None, 1), attrib.Scales("space/reach", 1)),
                 self.default_observer,
                 description="""The numeric identifiers for individual reaches (in the order of the `Concentrations` 
                 input) that apply scenario-wide."""
@@ -294,7 +296,7 @@ class LEffectModel(base.Component):
             ),
             base.Input(
                 "MultiplicationFactors",
-                (attrib.Class("list[float]", 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
+                (attrib.Class(list[float], 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
                 self.default_observer,
                 description="""The multiplication factors applied to enable LP50 analyses. Include a factor of 1 for
                 simulations returning unscaled LEffectModel results."""
