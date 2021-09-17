@@ -240,7 +240,7 @@ class LEffectModel(base.Component):
             ),
             base.Input(
                 "ReachListHydrography",
-                (attrib.Class("list[int]", 1), attrib.Unit(None, 1), attrib.Scales("space/base_geometry", 1)),
+                (attrib.Class(list[int], 1), attrib.Unit(None, 1), attrib.Scales("space/base_geometry", 1)),
                 self.default_observer,
                 description="""The numeric identifiers for individual reaches (in the order of the scenario hydrography 
                 input) that apply scenario-wide. This is a temporary solution to ensure outputs to be in original 
@@ -256,7 +256,7 @@ class LEffectModel(base.Component):
             ),
             base.Input(
                 "ReachListConcentrations",
-                (attrib.Class("list[int]", 1), attrib.Unit(None, 1), attrib.Scales("space/reach", 1)),
+                (attrib.Class(list[int], 1), attrib.Unit(None, 1), attrib.Scales("space/reach", 1)),
                 self.default_observer,
                 description="""The numeric identifiers for individual reaches (in the order of the `Concentrations` 
                 input) that apply scenario-wide."""
@@ -294,7 +294,7 @@ class LEffectModel(base.Component):
             ),
             base.Input(
                 "MultiplicationFactors",
-                (attrib.Class("list[float]", 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
+                (attrib.Class(list[float], 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
                 self.default_observer,
                 description="""The multiplication factors applied to enable LP50 analyses. Include a factor of 1 for
                 simulations returning unscaled LEffectModel results."""
