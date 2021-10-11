@@ -17,6 +17,7 @@ class LEffectModel(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.11", "2021-10-11"),
         base.VersionInfo("2.0.10", "2021-09-17"),
         base.VersionInfo("2.0.9", "2021-08-18"),
         base.VersionInfo("2.0.8", "2021-08-16"),
@@ -125,6 +126,7 @@ class LEffectModel(base.Component):
     VERSION.fixed("2.0.8", "Temporal scale of some outputs")
     VERSION.added("2.0.9", "Base documentation")
     VERSION.changed("2.0.10", "Make use of generic types for class attributes")
+    VERSION.changed("2.0.11", "Replaced legacy format strings by f-strings")
 
     def __init__(self, name, observer, store):
         super(LEffectModel, self).__init__(name, observer, store)
@@ -539,12 +541,12 @@ class LEffectModel(base.Component):
         # noinspection SpellCheckingInspection
         self.prepare_coefficients(
             os.path.join(
-                processing_path, "ETInput", model + "ModelSystem", "parameters", model + "ModelSystem_coefs.csv"),
+                processing_path, "ETInput", f"{model}ModelSystem", "parameters", f"{model}ModelSystem_coefs.csv"),
             model
         )
         # noinspection SpellCheckingInspection
         self.prepare_reach_list(os.path.join(
-            processing_path, "ETInput", model + "ModelSystem", "maps", "shapes", "reachlist_shp", "Reachlist_shp.shp"
+            processing_path, "ETInput", f"{model}ModelSystem", "maps", "shapes", "reachlist_shp", "Reachlist_shp.shp"
         ))
         time_slices = self.get_time_slices()
         self.prepare_concentrations(
@@ -552,7 +554,7 @@ class LEffectModel(base.Component):
         if model in ["LPopSD", "LPopIT"]:
             self.prepare_control_population_model(
                 os.path.join(
-                    processing_path, "ETInput", model + "ModelSystem", "parameters", model + "ModelSystem_control.csv"),
+                    processing_path, "ETInput", f"{model}ModelSystem", "parameters", f"{model}ModelSystem_control.csv"),
                 simulation_start,
                 number_of_warm_up_years,
                 recovery_period_years
@@ -560,7 +562,7 @@ class LEffectModel(base.Component):
             self.run_module(processing_path)
             # noinspection SpellCheckingInspection
             self.store_results_per_day(
-                os.path.join(processing_path, "ecotalk", model + "ModelSystem_MoS", "x1", "x1s{}"),
+                os.path.join(processing_path, "ecotalk", f"{model}ModelSystem_MoS", "x1", "x1s{}"),
                 {
                     "x1s{}r{}_adultMetapop.txt": "AdultMetaPopulation",
                     "x1s{}r{}_embryoMetapop.txt": "EmbryoMetaPopulation",
@@ -577,7 +579,7 @@ class LEffectModel(base.Component):
             )
             # noinspection SpellCheckingInspection
             self.store_results_per_day_and_reach(
-                os.path.join(processing_path, "ecotalk", model + "ModelSystem_Mos", "x1", "x1s{}"),
+                os.path.join(processing_path, "ecotalk", f"{model}ModelSystem_Mos", "x1", "x1s{}"),
                 {
                     "x1s{}r{}_adultPopByReach.txt": "AdultPopulationByReach",
                     "x1s{}r{}_embryoPopByReach.txt": "EmbryoPopulationByReach",
@@ -598,9 +600,9 @@ class LEffectModel(base.Component):
                     os.path.join(
                         processing_path,
                         "ETInput",
-                        model + "ModelSystem",
+                        f"{model}ModelSystem",
                         "parameters",
-                        model + "ModelSystem_control.csv"
+                        f"{model}ModelSystem_control.csv"
                     ),
                     simulation_start,
                     y
@@ -608,13 +610,13 @@ class LEffectModel(base.Component):
                 self.run_module(processing_path)
                 # noinspection SpellCheckingInspection
                 os.rename(
-                    os.path.join(processing_path, "ecotalk", model + "ModelSystem_MoS.modelscript"),
-                    os.path.join(processing_path, "ecotalk", model + "ModelSystem_MoS.modelscript." + str(y))
+                    os.path.join(processing_path, "ecotalk", f"{model}ModelSystem_MoS.modelscript"),
+                    os.path.join(processing_path, "ecotalk", f"{model}ModelSystem_MoS.modelscript.{y}")
                 )
                 # noinspection SpellCheckingInspection
                 os.rename(
-                    os.path.join(processing_path, "ecotalk", model + "ModelSystem_MoS"),
-                    os.path.join(processing_path, "ecotalk", model + "ModelSystem_MoS_" + str(y))
+                    os.path.join(processing_path, "ecotalk", f"{model}ModelSystem_MoS"),
+                    os.path.join(processing_path, "ecotalk", f"{model}ModelSystem_MoS_{y}")
                 )
             # noinspection SpellCheckingInspection
             self.store_results_per_year_and_reach(
@@ -639,9 +641,9 @@ class LEffectModel(base.Component):
         """
         # noinspection SpellCheckingInspection
         os.makedirs(os.path.join(processing_path, "ecotalk"))
-        os.makedirs(os.path.join(processing_path, "ETInput", model + "ModelSystem", "parameters"))
+        os.makedirs(os.path.join(processing_path, "ETInput", f"{model}ModelSystem", "parameters"))
         # noinspection SpellCheckingInspection
-        os.makedirs(os.path.join(processing_path, "ETInput", model + "ModelSystem", "maps", "shapes", "reachlist_shp"))
+        os.makedirs(os.path.join(processing_path, "ETInput", f"{model}ModelSystem", "maps", "shapes", "reachlist_shp"))
         os.makedirs(os.path.join(processing_path, "ETInput", "CatchmentModelSystem", "data"))
         for file in files:
             shutil.copyfile(file[0], file[1])
@@ -686,9 +688,10 @@ class LEffectModel(base.Component):
                 f.write("RInterface rDirectory: nil. \"\"\n")
             else:
                 raise ValueError("Unexpected model: " + model)
-            f.write("mfs := #({}).\n".format(" ".join([str(x) for x in multiplication_factors])))
-            f.write("scriptFile := {}Project scriptMoSAnalysis{}MultiplicationFactors: mfs{}.\n".format(
-                project_type, project_name, " runs: " + str(number_runs) if project_type == "LPop" else "")
+            f.write(f"mfs := #({' '.join([str(x) for x in multiplication_factors])}).\n")
+            f.write(
+                f"scriptFile := {project_type}Project scriptMoSAnalysis{project_name}MultiplicationFactors: "
+                f"mfs{' runs: ' + str(number_runs) if project_type == 'LPop' else ''}.\n"
             )
             f.write("(ModelProject fromScriptFile: scriptFile) runModelProjectForeground.\n")
             f.write("Smalltalk quitPrimitive\n")
@@ -704,49 +707,59 @@ class LEffectModel(base.Component):
         with open(coefficient_file, "w") as f:
             f.write("Component,model-dependent,inhabitantClass\n")
             if model in ["LPopSD", "LPopIT"]:
-                f.write("minClutchSize:,{},minimum clutch size [ind]\n".format(
-                    self._inputs["MinimumClutchSize"].read().values))
-                f.write("backgroundMortality:,{},background mortality rate [d-1]\n".format(
-                    self._inputs["BackgroundMortalityRate"].read().values))
-                f.write("muDD:,{},(default 0.000010) density-dependent mortality rate [m2 ind-1 d-1]\n".format(
-                    self._inputs["DensityDependentMortalityRate"].read().values))
+                f.write(f"minClutchSize:,{self._inputs['MinimumClutchSize'].read().values},minimum clutch size [ind]\n")
+                f.write(
+                    f"backgroundMortality:,{self._inputs['BackgroundMortalityRate'].read().values},"
+                    "background mortality rate [d-1]\n"
+                )
+                f.write(
+                    f"muDD:,{self._inputs['DensityDependentMortalityRate'].read().values},"
+                    "(default 0.000010) density-dependent mortality rate [m2 ind-1 d-1]\n"
+                )
             elif model in ["CatchmentGUTSSD", "CatchmentGUTSIT"]:
                 pass
             else:
                 raise ValueError("Unexpected model: " + model)
-            f.write("kd:,{},dominant rate constant [1/d]\n".format(
-                self._inputs["DominantRateConstant"].read().values, model))
-            f.write("hb:,{},background hazard rate [1/d]\n".format(
-                self._inputs["BackgroundHazardRate"].read().values, model))
+            f.write(f"kd:,{self._inputs['DominantRateConstant'].read().values},dominant rate constant [1/d]\n")
+            f.write(f"hb:,{self._inputs['BackgroundHazardRate'].read().values},background hazard rate [1/d]\n")
             if model in ["LPopSD", "CatchmentGUTSSD"]:
-                f.write("z:,{},threshold concentration [ng/L]\n".format(
-                    self._inputs["ParameterZOfSDModel"].read().values))
-                f.write("b:,{},killing rate [L/(ng*d)]\n".format(self._inputs["ParameterBOfSDModel"].read().values))
+                f.write(f"z:,{self._inputs['ParameterZOfSDModel'].read().values},threshold concentration [ng/L]\n")
+                f.write(f"b:,{self._inputs['ParameterBOfSDModel'].read().values},killing rate [L/(ng*d)]\n")
             elif model in ["LPopIT", "CatchmentGUTSIT"]:
-                f.write("m:,{},threshold distribution [ng/L]\n".format(
-                    self._inputs["ThresholdOfITModel"].read().values))
-                f.write("beta:,{},width of distribution []\n".format(self._inputs["BetaOfITModel"].read().values))
+                f.write(f"m:,{self._inputs['ThresholdOfITModel'].read().values},threshold distribution [ng/L]\n")
+                f.write(f"beta:,{self._inputs['BetaOfITModel'].read().values},width of distribution []\n")
             else:
                 raise ValueError("Unexpected model: " + model)
             f.write("Component,model-dependent,landscapeClass\n")
             if model in ["LPopSD", "LPopIT"]:
-                f.write("envTav:,{},average temperature parameter of forcing function [oC]\n".format(
-                    self._inputs["AverageTemperatureParameterOfForcingFunction"].read().values))
-                f.write("envTamp:,{},amplitude temperature fluctuations parameter [oC]\n".format(
-                    self._inputs["AmplitudeTemperatureFluctuationsParameter"].read().values))
+                f.write(
+                    f"envTav:,{self._inputs['AverageTemperatureParameterOfForcingFunction'].read().values},"
+                    "average temperature parameter of forcing function [oC]\n"
+                )
+                f.write(
+                    f"envTamp:,{self._inputs['AmplitudeTemperatureFluctuationsParameter'].read().values},"
+                    "amplitude temperature fluctuations parameter [oC]\n"
+                )
                 # noinspection SpellCheckingInspection
-                f.write("envTminShift:,{},shift forward of daynr with lowest temperature [d]\n".format(
-                    self._inputs["ShiftForwardOfDayNumberWithLowestTemperature"].read().values))
+                f.write(
+                    f"envTminShift:,{self._inputs['ShiftForwardOfDayNumberWithLowestTemperature'].read().values},"
+                    "shift forward of daynr with lowest temperature [d]\n"
+                )
             elif model in ["CatchmentGUTSSD", "CatchmentGUTSIT"]:
                 pass
             else:
                 raise ValueError("Unexpected model: " + model)
             f.write("conversionToGutsFactor:,1.0,(concentrations are given in ng/l; no conversion))\n")
             if model in ["LPopSD", "LPopIT"]:
-                f.write("migrationProb:,{},per individual probability of migration [d-1]\n".format(
-                    self._inputs["PerIndividualProbabilityOfMigration"].read().values))
-                f.write("downStreamProb:,{},probability of a migrating individual to move downstream\n".format(
-                    self._inputs["ProbabilityOfAMigratingIndividualToMoveDownstream"].read().values))
+                f.write(
+                    f"migrationProb:,{self._inputs['PerIndividualProbabilityOfMigration'].read().values},"
+                    "per individual probability of migration [d-1]\n"
+                )
+                f.write(
+                    "downStreamProb:,"
+                    f"{self._inputs['ProbabilityOfAMigratingIndividualToMoveDownstream'].read().values},"
+                    "probability of a migrating individual to move downstream\n"
+                )
             elif model in ["CatchmentGUTSSD", "CatchmentGUTSIT"]:
                 pass
             else:
@@ -819,7 +832,7 @@ class LEffectModel(base.Component):
                     reported_concentrations.tolist()
             # noinspection SpellCheckingInspection
             with open(
-                    os.path.join(time_slice_path, "rummen_" + str(simulation_start.year + y) + ".msgpack"),
+                    os.path.join(time_slice_path, f"rummen_{simulation_start.year + y}.msgpack"),
                     "wb"
             ) as f:
                 msgpack.pack(concentrations, f)
@@ -847,16 +860,22 @@ class LEffectModel(base.Component):
         """
         number_hours = self.inputs["Concentrations"].describe()["shape"][0]
         with open(control_file, "w") as f:
-            f.write("startYear:,{},start year of the simulation\n".format(
-                simulation_start.year - number_of_warm_up_years))
-            f.write("endYear:,{},last year of the simulation\n".format(
-                (simulation_start + datetime.timedelta(number_hours / 24 - 1)).year + recovery_period_year))
-            f.write("startApplicationYear:,{},start year of pesticide application\n".format(simulation_start.year))
-            f.write("endApplicationYear:,{},last year of pesticide application\n".format(
-                (simulation_start + datetime.timedelta(number_hours / 24 - 1)).year))
+            f.write(f"startYear:,{simulation_start.year - number_of_warm_up_years},start year of the simulation\n")
+            f.write(
+                "endYear:,"
+                f"{(simulation_start + datetime.timedelta(number_hours / 24 - 1)).year + recovery_period_year},"
+                "last year of the simulation\n"
+            )
+            f.write(f"startApplicationYear:,{simulation_start.year},start year of pesticide application\n")
+            f.write(
+                f"endApplicationYear:,{(simulation_start + datetime.timedelta(number_hours / 24 - 1)).year},"
+                "last year of pesticide application\n"
+            )
             f.write("useCSV:,0,use the slow csv input format (1) or much faster msgpack format(0)\n")
-            f.write("stepsInHr:,{},the number of steps within 1 hourly time step for GUTS simulation".format(
-                self._inputs["NumberOfStepsWithinOneHour"].read().values))
+            f.write(
+                f"stepsInHr:,{self._inputs['NumberOfStepsWithinOneHour'].read().values},"
+                "the number of steps within 1 hourly time step for GUTS simulation"
+            )
         return
 
     def prepare_control_individual_model(self, control_file, simulation_start, year_index):
@@ -868,15 +887,16 @@ class LEffectModel(base.Component):
         :return: Nothing.
         """
         with open(control_file, "w") as f:
-            f.write("applicationYear:,{},year of pesticide application\n".format(simulation_start.year + year_index))
-            f.write("verbose:,{},survival output per day (1) or end of the year only (0)\n".format(
-                self._inputs["Verbosity"].read().values))
+            f.write(f"applicationYear:,{simulation_start.year + year_index},year of pesticide application\n")
+            f.write(
+                f"verbose:,{self._inputs['Verbosity'].read().values},"
+                "survival output per day (1) or end of the year only (0)\n"
+            )
             f.write("useCSV:,0,use the slow csv input format (1) or much faster msgpack format(0)\n")
-            f.write("stepsInHr:,{},the number of steps within 1 hourly time step for GUTS simulation".format(
-                self._inputs["NumberOfStepsWithinOneHour"].read().values))
-            f.write("useCSV:,0,use the slow csv input format (1) or much faster msgpack format(0)\n")
-            f.write("stepsInHr:,{},the number of steps within 1 hourly time step for GUTS simulation".format(
-                self._inputs["NumberOfStepsWithinOneHour"].read().values))
+            f.write(
+                f"stepsInHr:,{self._inputs['NumberOfStepsWithinOneHour'].read().values},"
+                "the number of steps within 1 hourly time step for GUTS simulation"
+            )
         return
 
     def store_results_per_day(
