@@ -17,6 +17,7 @@ class LEffectModel(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.11", "2021-10-11"),
         base.VersionInfo("2.0.10", "2021-09-17"),
         base.VersionInfo("2.0.9", "2021-08-18"),
         base.VersionInfo("2.0.8", "2021-08-16"),
@@ -125,6 +126,7 @@ class LEffectModel(base.Component):
     VERSION.fixed("2.0.8", "Temporal scale of some outputs")
     VERSION.added("2.0.9", "Base documentation")
     VERSION.changed("2.0.10", "Make use of generic types for class attributes")
+    VERSION.changed("2.0.11", "Replaced legacy format strings by f-strings")
 
     def __init__(self, name, observer, store):
         super(LEffectModel, self).__init__(name, observer, store)
