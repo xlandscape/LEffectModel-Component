@@ -1,6 +1,4 @@
-"""
-Landscape Model component of the LEffectModel effect module.
-"""
+"""Landscape Model component of the LEffectModel effect module."""
 from osgeo import ogr
 import shutil
 import numpy as np
@@ -12,11 +10,10 @@ import msgpack
 
 
 class LEffectModel(base.Component):
-    """
-    Encapsulation of the LEffectModel module as a Landscape Model component.
-    """
+    """Encapsulation of the LEffectModel module as a Landscape Model component."""
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.0.12", "2021-10-12"),
         base.VersionInfo("2.0.11", "2021-10-11"),
         base.VersionInfo("2.0.10", "2021-09-17"),
         base.VersionInfo("2.0.9", "2021-08-18"),
@@ -127,8 +124,17 @@ class LEffectModel(base.Component):
     VERSION.added("2.0.9", "Base documentation")
     VERSION.changed("2.0.10", "Make use of generic types for class attributes")
     VERSION.changed("2.0.11", "Replaced legacy format strings by f-strings")
+    VERSION.changed("2.0.12", "Switched to Google docstring style")
 
     def __init__(self, name, observer, store):
+        """
+        Initializes a LEffectModule component.
+
+        Args:
+            name: The name of the component.
+            observer: The default observer of the component.
+            store: The default store of the component.
+        """
         super(LEffectModel, self).__init__(name, observer, store)
         self._module = base.Module("LEffectModel", "20201208", r"\module\doc\LEffectModel_Manual.pdf")
         self._inputs = base.InputContainer(self, [
@@ -508,12 +514,13 @@ class LEffectModel(base.Component):
                 }
             )
         ])
-        return
 
     def run(self):
         """
         Runs the component.
-        :return: Nothing.
+
+        Returns:
+            Nothing.
         """
         processing_path = self.inputs["ProcessingPath"].read().values
         model = self.inputs["Model"].read().values
@@ -628,16 +635,19 @@ class LEffectModel(base.Component):
             )
         else:
             raise ValueError("Unexpected model: " + model)
-        return
 
     @staticmethod
     def prepare_runtime_environment(processing_path, files, model):
         """
         Prepares the runtime environment of the module.
-        :param processing_path: The working directory of the module.
-        :param files: The files required for the runtime environment to work properly.
-        :param model: The identifier of the model used.
-        :return: Nothing.
+
+        Args:
+            processing_path: The working directory of the module.
+            files: The files required for the runtime environment to work properly.
+            model: The identifier of the model used.
+
+        Returns:
+            Nothing.
         """
         # noinspection SpellCheckingInspection
         os.makedirs(os.path.join(processing_path, "ecotalk"))
@@ -647,17 +657,20 @@ class LEffectModel(base.Component):
         os.makedirs(os.path.join(processing_path, "ETInput", "CatchmentModelSystem", "data"))
         for file in files:
             shutil.copyfile(file[0], file[1])
-        return
 
     @staticmethod
     def prepare_startup_statements(statements_file, model, multiplication_factors, number_runs):
         """
         Prepares the SmallTalk statement file.
-        :param statements_file: The path for the statement file.
-        :param model: The identifier of the model used.
-        :param multiplication_factors: A list of multiplication factors for margin-of-safety analyses.
-        :param number_runs: The number of runs to perform in a population model run.
-        :return: Nothing.
+
+        Args:
+            statements_file: The path for the statement file.
+            model: The identifier of the model used.
+            multiplication_factors: A list of multiplication factors for margin-of-safety analyses.
+            number_runs: The number of runs to perform in a population model run.
+
+        Returns:
+            Nothing.
         """
         if model in ["LPopSD", "LPopIT"]:
             project_name = model
@@ -695,14 +708,17 @@ class LEffectModel(base.Component):
             )
             f.write("(ModelProject fromScriptFile: scriptFile) runModelProjectForeground.\n")
             f.write("Smalltalk quitPrimitive\n")
-        return
 
     def prepare_coefficients(self, coefficient_file, model):
         """
         Prepares the coefficients used by the module.
-        :param coefficient_file: The file path for the coefficient file.
-        :param model: The model name.
-        :return: Nothing.
+
+        Args:
+            coefficient_file: The file path for the coefficient file.
+            model: The model name.
+
+        Returns:
+            Nothing.
         """
         with open(coefficient_file, "w") as f:
             f.write("Component,model-dependent,inhabitantClass\n")
@@ -741,6 +757,7 @@ class LEffectModel(base.Component):
                     "amplitude temperature fluctuations parameter [oC]\n"
                 )
                 # noinspection SpellCheckingInspection
+                # noinspection GrazieInspection
                 f.write(
                     f"envTminShift:,{self._inputs['ShiftForwardOfDayNumberWithLowestTemperature'].read().values},"
                     "shift forward of daynr with lowest temperature [d]\n"
@@ -749,7 +766,7 @@ class LEffectModel(base.Component):
                 pass
             else:
                 raise ValueError("Unexpected model: " + model)
-            f.write("conversionToGutsFactor:,1.0,(concentrations are given in ng/l; no conversion))\n")
+            f.write("conversionToGutsFactor:,1.0,(concentrations are given in ng/l; no conversion)\n")
             if model in ["LPopSD", "LPopIT"]:
                 f.write(
                     f"migrationProb:,{self._inputs['PerIndividualProbabilityOfMigration'].read().values},"
@@ -764,13 +781,16 @@ class LEffectModel(base.Component):
                 pass
             else:
                 raise ValueError("Unexpected model: " + model)
-        return
 
     def prepare_reach_list(self, reaches_file):
         """
         Prepares the reach list.
-        :param reaches_file: The file path for the reach list.
-        :return: Nothing.
+
+        Args:
+            reaches_file: The file path for the reach list.
+
+        Returns:
+            Nothing.
         """
         reaches = self.inputs["ReachListHydrography"].read()
         driver = ogr.GetDriverByName("ESRI Shapefile")
@@ -787,12 +807,13 @@ class LEffectModel(base.Component):
             reach.SetField("key", reach_id)
             reach_list_layer.CreateFeature(reach)
         self.outputs["Reaches"].set_values(reaches.values, scales=reaches.scales)
-        return
 
     def get_time_slices(self):
         """
         Slices the simulation time span into individual years for module inputs and outputs.
-        :return: A list of indices indicating the hours where slicing should be done.
+
+        Returns:
+            A list of indices indicating the hours when slicing should be done.
         """
         simulation_start = self.inputs["SimulationStart"].read().values
         concentrations_info = self.inputs["Concentrations"].describe()
@@ -812,10 +833,14 @@ class LEffectModel(base.Component):
     def prepare_concentrations(self, time_slice_path, time_slices, simulation_start):
         """
         Prepares input concentrations for individual module runs.
-        :param time_slice_path: The path for the prepared input files.
-        :param time_slices: The indices by which input concentrations are sliced.
-        :param simulation_start: The first day of the simulation.
-        :return: Nothing.
+
+        Args:
+            time_slice_path: The path for the prepared input files.
+            time_slices: The indices by which input concentrations are sliced.
+            simulation_start: The first day of the simulation.
+
+        Returns:
+            Nothing.
         """
         reaches = self.inputs["ReachListConcentrations"].read().values
         start_day_of_year = simulation_start.timetuple().tm_yday
@@ -836,27 +861,33 @@ class LEffectModel(base.Component):
                     "wb"
             ) as f:
                 msgpack.pack(concentrations, f)
-        return
 
     def run_module(self, processing_path):
         """
         Runs the module.
-        :param processing_path: The path used for processing.
-        :return: Nothing.
+
+        Args:
+            processing_path: The path used for processing.
+
+        Returns:
+            Nothing.
         """
         squeak = os.path.join(os.path.dirname(__file__), "module", "squeak.exe")
         base.run_process((squeak, "LPop.image", "startup.st"), processing_path, self.default_observer)
-        return
 
     def prepare_control_population_model(
             self, control_file, simulation_start, number_of_warm_up_years, recovery_period_year):
         """
         Prepares the control file.
-        :param control_file: The name of the control file.
-        :param simulation_start: The first day of the simulation.
-        :param number_of_warm_up_years: The number of years used to warm-up the module.
-        :param recovery_period_year: The number of years added as recovery period to the simulation.
-        :return: Nothing.
+
+        Args:
+            control_file: The name of the control file.
+            simulation_start: The first day of the simulation.
+            number_of_warm_up_years: The number of years used to warm up the module.
+            recovery_period_year: The number of years added as recovery period to the simulation.
+
+        Returns:
+            Nothing.
         """
         number_hours = self.inputs["Concentrations"].describe()["shape"][0]
         with open(control_file, "w") as f:
@@ -876,15 +907,18 @@ class LEffectModel(base.Component):
                 f"stepsInHr:,{self._inputs['NumberOfStepsWithinOneHour'].read().values},"
                 "the number of steps within 1 hourly time step for GUTS simulation"
             )
-        return
 
     def prepare_control_individual_model(self, control_file, simulation_start, year_index):
         """
         Prepares the control file.
-        :param control_file: The name of the control file.
-        :param simulation_start: The first day of the simulation.
-        :param year_index: The index of the current year to simulate.
-        :return: Nothing.
+
+        Args:
+            control_file: The name of the control file.
+            simulation_start: The first day of the simulation.
+            year_index: The index of the current year to simulate.
+
+        Returns:
+            Nothing.
         """
         with open(control_file, "w") as f:
             f.write(f"applicationYear:,{simulation_start.year + year_index},year of pesticide application\n")
@@ -897,7 +931,6 @@ class LEffectModel(base.Component):
                 f"stepsInHr:,{self._inputs['NumberOfStepsWithinOneHour'].read().values},"
                 "the number of steps within 1 hourly time step for GUTS simulation"
             )
-        return
 
     def store_results_per_day(
             self,
@@ -912,15 +945,19 @@ class LEffectModel(base.Component):
     ):
         """
         Reads the results into the Landscape Model.
-        :param time_slice_path: The file path of the sliced module output files.
-        :param result_set: A dictionary that maps file names to outputs.
-        :param first_year: The first year of the simulation as an integer number.
-        :param number_years: The number of years simulated.
-        :param number_warm_up_years: The number of years used to warm-up the module.
-        :param recovery_period_years: The number of years added as recovery period to the simulation.
-        :param number_multiplication_factors: The number of multiplication factors used for the module run.
-        :param number_runs: The number of runs of the population model.
-        :return: Nothing.
+
+        Args:
+            time_slice_path: The file path of the sliced module output files.
+            result_set: A dictionary that maps file names to component outputs.
+            first_year: The first year of the simulation as an integer number.
+            number_years: The number of years simulated.
+            number_warm_up_years: The number of years used to warm up the module.
+            recovery_period_years: The number of years added as recovery period to the simulation.
+            number_multiplication_factors: The number of multiplication factors used for the module run.
+            number_runs: The number of runs of the population model.
+
+        Returns:
+            Nothing.
         """
         number_days = (
                 datetime.date(first_year + number_years + recovery_period_years, 1, 1) -
@@ -951,7 +988,6 @@ class LEffectModel(base.Component):
                         ),
                         create=False
                     )
-        return
 
     def store_results_per_day_and_reach(
             self,
@@ -967,16 +1003,20 @@ class LEffectModel(base.Component):
     ):
         """
         Reads the results into the Landscape Model.
-        :param time_slice_path: The file path of the sliced module output files.
-        :param result_set: A dictionary that maps file names to outputs.
-        :param first_year: The first year of the simulation as an integer number.
-        :param number_years: The number of years simulated.
-        :param number_warm_up_years: The number of years used to warm-up the module.
-        :param recovery_period_years: The number of years added as recovery period to the simulation.
-        :param number_reaches: The number of reaches simulated.
-        :param number_multiplication_factors: The number of multiplication factors used for the module run.
-        :param number_runs: The number of runs of the population model.
-        :return: Nothing.
+
+        Args:
+            time_slice_path: The file path of the sliced module output files.
+            result_set: A dictionary that maps file names to component outputs.
+            first_year: The first year of the simulation as an integer number.
+            number_years: The number of years simulated.
+            number_warm_up_years: The number of years used to warm up the module.
+            recovery_period_years: The number of years added as recovery period to the simulation.
+            number_reaches: The number of reaches simulated.
+            number_multiplication_factors: The number of multiplication factors used for the module run.
+            number_runs: The number of runs of the population model.
+
+        Returns:
+            Nothing.
         """
         number_days = (
                 datetime.date(first_year + number_years + recovery_period_years, 1, 1) -
@@ -1008,18 +1048,21 @@ class LEffectModel(base.Component):
                         ),
                         create=False
                     )
-        return
 
     def store_results_per_year_and_reach(
             self, time_slice_path, result_set, number_years, number_reaches, number_multiplication_factors):
         """
         Reads the results into the Landscape Model.
-        :param time_slice_path: The file path of the sliced module output files.
-        :param result_set: A dictionary that maps file names to outputs.
-        :param number_years: The number of years simulated.
-        :param number_reaches: The number of reaches simulated.
-        :param number_multiplication_factors: The number of multiplication factors used for the module run.
-        :return: Nothing.
+
+        Args:
+            time_slice_path: The file path of the sliced module output files.
+            result_set: A dictionary that maps file names to component outputs.
+            number_years: The number of years simulated.
+            number_reaches: The number of reaches simulated.
+            number_multiplication_factors: The number of multiplication factors used for the module run.
+
+        Returns:
+            Nothing.
         """
         for file_name, output_name in result_set.items():
             values = np.zeros((number_years, number_reaches, number_multiplication_factors), np.float)
@@ -1030,4 +1073,3 @@ class LEffectModel(base.Component):
                         values[y, i, slice(number_multiplication_factors)] = [float(x) for x in record]
             self._outputs[output_name].set_values(
                 values, chunks=(number_years, number_reaches, number_multiplication_factors))
-        return
