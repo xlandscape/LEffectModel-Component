@@ -249,27 +249,12 @@ class LEffectModel(base.Component):
                 the upstream reach; downStreamProb) used by population models."""
             ),
             base.Input(
-                "ReachListHydrography",
-                (attrib.Class(list[int], 1), attrib.Unit(None, 1), attrib.Scales("space/base_geometry", 1)),
-                self.default_observer,
-                description="""The numeric identifiers for individual reaches (in the order of the scenario hydrography 
-                input) that apply scenario-wide. This is a temporary solution to ensure outputs to be in original 
-                scenario data order."""
-            ),
-            base.Input(
                 "SimulationStart",
                 (attrib.Class(datetime.date, 1), attrib.Unit(None, 1), attrib.Scales("global", 1)),
                 self.default_observer,
                 description="""The first time step for which concentration input data is provided. This input also 
                 defines the base year for LEffectModel simulations. Actual simulation starts `NumberOfWarmUpYears`
                 earlier and ends `RecoveryPeriodYears` later."""
-            ),
-            base.Input(
-                "ReachListConcentrations",
-                (attrib.Class(list[int], 1), attrib.Unit(None, 1), attrib.Scales("space/reach", 1)),
-                self.default_observer,
-                description="""The numeric identifiers for individual reaches (in the order of the `Concentrations` 
-                input) that apply scenario-wide."""
             ),
             base.Input(
                 "Concentrations",
@@ -304,7 +289,7 @@ class LEffectModel(base.Component):
             ),
             base.Input(
                 "MultiplicationFactors",
-                (attrib.Class(list[float], 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
+                (attrib.Class(list[float], 1), attrib.Unit("1", 1), attrib.Scales("other/factor", 1)),
                 self.default_observer,
                 description="""The multiplication factors applied to enable LP50 analyses. Include a factor of 1 for
                 simulations returning unscaled LEffectModel results."""
@@ -501,16 +486,6 @@ class LEffectModel(base.Component):
                         "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input"
                     ),
                     "chunks": "for allowing compression (only one chunk used)"
-                }
-            ),
-            base.Output(
-                "Reaches",
-                store,
-                self,
-                {"unit": None},
-                "The numerical identifiers of the reaches in the order presented by the various outputs.",
-                {
-                    "type": "same as of the [ReachListHydrography](#ReachListHydrography) input"
                 }
             )
         ])
@@ -792,21 +767,19 @@ class LEffectModel(base.Component):
         Returns:
             Nothing.
         """
-        reaches = self.inputs["ReachListHydrography"].read()
+        reaches = self.inputs["Concentrations"].describe()["element_names"][1].get_values()
         driver = ogr.GetDriverByName("ESRI Shapefile")
         reach_list_data_source = driver.CreateDataSource(reaches_file)
         reach_list_layer = reach_list_data_source.CreateLayer("reaches", None, ogr.wkbPoint)
         reach_list_layer.CreateField(ogr.FieldDefn("key", ogr.OFTInteger))
         reach_list_layer_definition = reach_list_layer.GetLayerDefn()
-        for i, feature in enumerate(reaches.values):
+        for i, feature in enumerate(reaches):
             reach = ogr.Feature(reach_list_layer_definition)
             first_point = ogr.Geometry(ogr.wkbPoint)
             first_point.AddPoint(0, 0, 0)
             reach.SetGeometry(first_point)
-            reach_id = feature
-            reach.SetField("key", reach_id)
+            reach.SetField("key", int(feature))
             reach_list_layer.CreateFeature(reach)
-        self.outputs["Reaches"].set_values(reaches.values, scales=reaches.scales)
 
     def get_time_slices(self):
         """
@@ -842,7 +815,7 @@ class LEffectModel(base.Component):
         Returns:
             Nothing.
         """
-        reaches = self.inputs["ReachListConcentrations"].read().values
+        reaches = self.inputs["Concentrations"].describe()["element_names"][1].get_values()
         start_day_of_year = simulation_start.timetuple().tm_yday
         concentrations = [[]] * len(reaches)
         for y in range(len(time_slices)):
@@ -967,7 +940,8 @@ class LEffectModel(base.Component):
             self._outputs[output_name].set_values(
                 np.ndarray,
                 shape=(number_days, number_multiplication_factors, number_runs),
-                chunks=(number_days, 1, 1)
+                chunks=(number_days, 1, 1),
+                element_names=(None, self.inputs["MultiplicationFactors"].describe()["element_names"][0], None)
             )
             for multiplication_factor in range(1, number_multiplication_factors + 1):
                 for run in range(1, number_runs + 1):
@@ -1026,7 +1000,13 @@ class LEffectModel(base.Component):
             self._outputs[output_name].set_values(
                 np.ndarray,
                 shape=(number_days, number_reaches, number_multiplication_factors, number_runs),
-                chunks=(number_days, 1, 1, 1)
+                chunks=(number_days, 1, 1, 1),
+                element_names=(
+                    None,
+                    self.inputs["Concentrations"].describe()["element_names"][1],
+                    self.inputs["MultiplicationFactors"].describe()["element_names"][0],
+                    None
+                )
             )
             for multiplication_factor in range(1, number_multiplication_factors + 1):
                 for run in range(1, number_runs + 1):
@@ -1072,4 +1052,11 @@ class LEffectModel(base.Component):
                         record = line.replace("\n", "").split("\t")
                         values[y, i, slice(number_multiplication_factors)] = [float(x) for x in record]
             self._outputs[output_name].set_values(
-                values, chunks=(number_years, number_reaches, number_multiplication_factors))
+                values,
+                chunks=(number_years, number_reaches, number_multiplication_factors),
+                element_names=(
+                    None,
+                    self.inputs["Concentrations"].describe()["element_names"][1],
+                    self.inputs["MultiplicationFactors"].describe()["element_names"][0]
+                )
+            )
