@@ -17,15 +17,15 @@
 ## About the project
 Encapsulation of the LEffectModel module as a Landscape Model component.  
 This is an automatically generated documentation based on the available code and in-line documentation. The current
-version of this document is from 2021-10-12.  
+version of this document is from 2021-11-18.  
 
 ### Built with
-* Landscape Model core version 1.8
+* Landscape Model core version 1.10
 * LEffectModel version 20201208 (see `\module\doc\LEffectModel_Manual.pdf` for details)
 
 
 ## Getting Started
-The component can be used in any Landscape Model based on core version 1.8 or newer. See the Landscape
+The component can be used in any Landscape Model based on core version 1.10 or newer. See the Landscape
 Model core's `README` for general tips on how to add a component to a Landscape Model.
 
 ### Prerequisites
@@ -44,59 +44,64 @@ The following gives a sample configuration of the `LEffectModel` component. See 
 ```xml
 <IndEffect_StepsRiverNetwork_SD_Species1 module="LEffectModel" class="LEffectModel"
 enabled_expression="'$(RunStepsRiverNetwork)' == 'true' and '$(RunLGuts)' == 'true'">
-<ProcessingPath>$(_MCS_BASE_DIR_)\$(_MC_NAME_)\processing\effect\ind_steps_sd_$(Species1)</ProcessingPath>
-<Model>CatchmentGUTSSD</Model>
-    <MinimumClutchSize type="int">14</MinimumClutchSize>
-    <BackgroundMortalityRate
-type="float" unit="1/d">0.005</BackgroundMortalityRate>
-    <DensityDependentMortalityRate type="float"
-unit="m&#178;/d">0.000025</DensityDependentMortalityRate>
-    <DominantRateConstant type="float"
-unit="1/h">$(Species1DominantRateConstantSD)</DominantRateConstant>
-    <BackgroundHazardRate type="float"
-unit="1/h">$(LGUTS_BackgroundHazardRate)</BackgroundHazardRate>
+    <ProcessingPath
+scales="global">
+        $(_MCS_BASE_DIR_)\$(_MC_NAME_)\processing\effect\ind_steps_sd_$(Species1)
+    </ProcessingPath>
+<Model scales="global">CatchmentGUTSSD</Model>
+    <MinimumClutchSize type="int" scales="global">14</MinimumClutchSize>
+<BackgroundMortalityRate type="float" unit="1/d" scales="global">0.005</BackgroundMortalityRate>
+<DensityDependentMortalityRate type="float" unit="m&#178;/d" scales="global">
+        0.000025
+</DensityDependentMortalityRate>
+    <DominantRateConstant type="float" unit="1/h" scales="global">
+$(Species1DominantRateConstantSD)
+    </DominantRateConstant>
+    <BackgroundHazardRate type="float" unit="1/h"
+scales="global">
+        $(LGUTS_BackgroundHazardRate)
+    </BackgroundHazardRate>
     <ParameterZOfSDModel type="float"
-unit="ng/l">$(Species1ThresholdConcentrationSD)</ParameterZOfSDModel>
-    <ParameterBOfSDModel type="float"
-unit="l/(ng*h)">$(Species1KillingRateSD)</ParameterBOfSDModel>
-    <AverageTemperatureParameterOfForcingFunction
-type="float" unit="&#176;C">
-        10
+unit="ng/l" scales="global">
+        $(Species1ThresholdConcentrationSD)
+    </ParameterZOfSDModel>
+<ParameterBOfSDModel type="float" unit="l/(ng*h)" scales="global">
+        $(Species1KillingRateSD)
+</ParameterBOfSDModel>
+    <AverageTemperatureParameterOfForcingFunction type="float" unit="&#176;C" scales="global">
+10
     </AverageTemperatureParameterOfForcingFunction>
-<AmplitudeTemperatureFluctuationsParameter type="float" unit="&#176;C">
+    <AmplitudeTemperatureFluctuationsParameter type="float"
+unit="&#176;C" scales="global">
         10
-</AmplitudeTemperatureFluctuationsParameter>
-    <ShiftForwardOfDayNumberWithLowestTemperature type="int" unit="d">
-31
-    </ShiftForwardOfDayNumberWithLowestTemperature>
-    <PerIndividualProbabilityOfMigration type="float"
-unit="1/d">0.05</PerIndividualProbabilityOfMigration>
-    <ProbabilityOfAMigratingIndividualToMoveDownstream
-type="float" unit="1">
+    </AmplitudeTemperatureFluctuationsParameter>
+<ShiftForwardOfDayNumberWithLowestTemperature type="int" unit="d" scales="global">
+        31
+</ShiftForwardOfDayNumberWithLowestTemperature>
+    <PerIndividualProbabilityOfMigration type="float" unit="1/d"
+scales="global">
+        0.05
+    </PerIndividualProbabilityOfMigration>
+<ProbabilityOfAMigratingIndividualToMoveDownstream type="float" unit="1" scales="global">
         0.667
-    </ProbabilityOfAMigratingIndividualToMoveDownstream>
-    <ReachListHydrography>
-<FromOutput component="LandscapeScenario" output="hydrography_id" />
-    </ReachListHydrography>
-    <SimulationStart
-type="date">$(SimulationStart)</SimulationStart>
+</ProbabilityOfAMigratingIndividualToMoveDownstream>
+    <SimulationStart type="date"
+scales="global">$(SimulationStart)</SimulationStart>
     <Concentrations>
-        <FromOutput component="StepsRiverNetwork"
-output="PEC_SW" />
+        <FromOutput
+component="StepsRiverNetwork" output="PEC_SW" />
     </Concentrations>
-    <ReachListConcentrations>
-        <FromOutput component="StepsRiverNetwork"
-output="Reaches" />
-    </ReachListConcentrations>
-    <NumberOfWarmUpYears type="int"
-unit="y">$(NumberOfWarmUpYears)</NumberOfWarmUpYears>
-    <RecoveryPeriodYears type="int"
-unit="y">$(RecoveryPeriodYears)</RecoveryPeriodYears>
-    <NumberOfStepsWithinOneHour type="int"
-unit="1">2</NumberOfStepsWithinOneHour>
-    <MultiplicationFactors type="list[float]"
-unit="1">$(MultiplicationFactors)</MultiplicationFactors>
-    <Verbosity type="int">0</Verbosity>
+    <NumberOfWarmUpYears type="int" unit="y"
+scales="global">$(NumberOfWarmUpYears)</NumberOfWarmUpYears>
+    <RecoveryPeriodYears type="int" unit="y"
+scales="global">$(RecoveryPeriodYears)</RecoveryPeriodYears>
+    <NumberOfStepsWithinOneHour type="int" unit="1"
+scales="global">2</NumberOfStepsWithinOneHour>
+    <MultiplicationFactors type="list[float]" unit="1"
+scales="other/factor" element_names="IndEffect_StepsRiverNetwork_SD_Species1/MultiplicationFactors">
+$(MultiplicationFactors)
+    </MultiplicationFactors>
+    <Verbosity type="int" scales="global">0</Verbosity>
 </IndEffect_StepsRiverNetwork_SD_Species1>
 ```
 
@@ -207,14 +212,6 @@ the upstream reach; downStreamProb) used by population models.
 The physical unit of the `ProbabilityOfAMigratingIndividualToMoveDownstream` input values is `1`.
 Values have to refer to the `global` scale.
 
-#### ReachListHydrography
-The numeric identifiers for individual reaches (in the order of the scenario hydrography 
-input) that apply scenario-wide. This is a temporary solution to ensure outputs to be in original 
-scenario data order.  
-`ReachListHydrography` expects its values to be of type `list`.
-Values of the `ReachListHydrography` input may not have a physical unit.
-Values have to refer to the `space/base_geometry` scale.
-
 #### SimulationStart
 The first time step for which concentration input data is provided. This input also 
 defines the base year for LEffectModel simulations. Actual simulation starts `NumberOfWarmUpYears`
@@ -222,13 +219,6 @@ earlier and ends `RecoveryPeriodYears` later.
 `SimulationStart` expects its values to be of type `date`.
 Values of the `SimulationStart` input may not have a physical unit.
 Values have to refer to the `global` scale.
-
-#### ReachListConcentrations
-The numeric identifiers for individual reaches (in the order of the `Concentrations` 
-input) that apply scenario-wide.  
-`ReachListConcentrations` expects its values to be of type `list`.
-Values of the `ReachListConcentrations` input may not have a physical unit.
-Values have to refer to the `space/reach` scale.
 
 #### Concentrations
 The substance concentrations reported starting with the `SimulationStart`.
@@ -262,7 +252,7 @@ The multiplication factors applied to enable LP50 analyses. Include a factor of 
 simulations returning unscaled LEffectModel results.  
 `MultiplicationFactors` expects its values to be of type `list`.
 The physical unit of the `MultiplicationFactors` input values is `1`.
-Values have to refer to the `global` scale.
+Values have to refer to the `other/factor` scale.
 
 #### Verbosity
 `Verbosity` expects its values to be of type `int`.
@@ -409,10 +399,6 @@ Dimension 3 spans the number of items in the [MultiplicationFactors](#Multiplica
 Chunking of the array is for allowing compression (only one chunk used).
 The values apply to the following scale: `time/year, space/base_geometry, other/factor`.
 The physical unit of the values is `1`.
-#### Reaches
-The numerical identifiers of the reaches in the order presented by the various outputs.  
-Values are expectedly of type `same as of the [ReachListHydrography](#ReachListHydrography) input`.
-Values have no physical unit.
 
 
 ## Roadmap
