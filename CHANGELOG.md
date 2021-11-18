@@ -1,5 +1,17 @@
 # Changelog
-This is the changelog for the LEffectModel component. It was automatically created on 2021-10-12.
+This is the changelog for the LEffectModel component. It was automatically created on 2021-11-18.
+
+## [2.0.13] - 2021-11-18
+
+### Added
+
+### Changed
+- Removed reach inputs and output
+- Scale of multiplication factors from `global` to `other/factor` 
+- Reports element names of outputs
+
+### Fixed
+
 
 ## [2.0.12] - 2021-10-12
 
