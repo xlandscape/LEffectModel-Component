@@ -17,15 +17,15 @@
 ## About the project
 Encapsulation of the LEffectModel module as a Landscape Model component.  
 This is an automatically generated documentation based on the available code and in-line documentation. The current
-version of this document is from 2021-11-18.  
+version of this document is from 2021-12-10.  
 
 ### Built with
-* Landscape Model core version 1.10
+* Landscape Model core version 1.11
 * LEffectModel version 20201208 (see `\module\doc\LEffectModel_Manual.pdf` for details)
 
 
 ## Getting Started
-The component can be used in any Landscape Model based on core version 1.10 or newer. See the Landscape
+The component can be used in any Landscape Model based on core version 1.11 or newer. See the Landscape
 Model core's `README` for general tips on how to add a component to a Landscape Model.
 
 ### Prerequisites
