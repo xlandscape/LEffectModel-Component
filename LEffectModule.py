@@ -610,7 +610,8 @@ class LEffectModel(base.Component):
                 {"guts_survival_reaches.txt_mfactors.txt": "GutsSurvivalReaches"},
                 len(time_slices),
                 self._inputs["Concentrations"].describe()["shape"][1],
-                len(multiplication_factors)
+                len(multiplication_factors),
+                simulation_start.year
             )
         else:
             raise ValueError("Unexpected model: " + model)
@@ -945,7 +946,8 @@ class LEffectModel(base.Component):
                 np.ndarray,
                 shape=(number_days, number_multiplication_factors, number_runs),
                 chunks=(number_days, 1, 1),
-                element_names=(None, self.inputs["MultiplicationFactors"].describe()["element_names"][0], None)
+                element_names=(None, self.inputs["MultiplicationFactors"].describe()["element_names"][0], None),
+                offset=(first_year, None, None)
             )
             for multiplication_factor in range(1, number_multiplication_factors + 1):
                 for run in range(1, number_runs + 1):
@@ -1010,7 +1012,8 @@ class LEffectModel(base.Component):
                     self.inputs["Concentrations"].describe()["element_names"][1],
                     self.inputs["MultiplicationFactors"].describe()["element_names"][0],
                     None
-                )
+                ),
+                offset=(first_year, None, None, None)
             )
             for multiplication_factor in range(1, number_multiplication_factors + 1):
                 for run in range(1, number_runs + 1):
@@ -1034,7 +1037,7 @@ class LEffectModel(base.Component):
                     )
 
     def store_results_per_year_and_reach(
-            self, time_slice_path, result_set, number_years, number_reaches, number_multiplication_factors):
+            self, time_slice_path, result_set, number_years, number_reaches, number_multiplication_factors, first_year):
         """
         Reads the results into the Landscape Model.
 
@@ -1044,6 +1047,7 @@ class LEffectModel(base.Component):
             number_years: The number of years simulated.
             number_reaches: The number of reaches simulated.
             number_multiplication_factors: The number of multiplication factors used for the module run.
+            first_year: The first year of the simulation as an integer number.
 
         Returns:
             Nothing.
@@ -1062,5 +1066,6 @@ class LEffectModel(base.Component):
                     None,
                     self.inputs["Concentrations"].describe()["element_names"][1],
                     self.inputs["MultiplicationFactors"].describe()["element_names"][0]
-                )
+                ),
+                offset=(first_year, None, None)
             )
