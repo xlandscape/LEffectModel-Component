@@ -13,6 +13,7 @@ class LEffectModel(base.Component):
     """Encapsulation of the LEffectModel module as a Landscape Model component."""
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.1.0", "2022-03-08"),
         base.VersionInfo("2.0.14", "2021-12-10"),
         base.VersionInfo("2.0.13", "2021-11-18"),
         base.VersionInfo("2.0.12", "2021-10-12"),
@@ -131,6 +132,7 @@ class LEffectModel(base.Component):
     VERSION.changed("2.0.13", "Scale of multiplication factors from `global` to `other/factor` ")
     VERSION.changed("2.0.13", "Reports element names of outputs")
     VERSION.changed("2.0.14", "Specifies offset of outputs")
+    VERSION.changed("2.1.0", "Module updated to version 20211111")
 
     def __init__(self, name, observer, store):
         """
