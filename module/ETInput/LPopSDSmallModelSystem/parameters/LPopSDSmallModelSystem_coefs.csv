@@ -12,5 +12,5 @@ envTav:,10.0,average temperature parameter of forcing function [oC]
 envTamp:,10.0,amplitude temperature fluctuations parameter [oC]
 envTminShift:,31.0,shift forward of daynr with lowest temperature [d]
 conversionToGutsFactor:,1000000.0,mg/L to nanogram/L
-migrationProb:,0.05,per individual probability of migration [d-1]
-downStreamProb:,0.667,probability of a migrating individual to move downstream
+migrationProb:,0.01,per individual probability of migration [d-1]
+downStreamProb:,0.5,probability of a migrating individual to move downstream
