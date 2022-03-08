@@ -17,15 +17,15 @@
 ## About the project
 Encapsulation of the LEffectModel module as a Landscape Model component.  
 This is an automatically generated documentation based on the available code and in-line documentation. The current
-version of this document is from 2021-12-10.  
+version of this document is from 2022-03-08.  
 
 ### Built with
-* Landscape Model core version 1.11
-* LEffectModel version 20201208 (see `\module\doc\LEffectModel_Manual.pdf` for details)
+* Landscape Model core version 1.13
+* LEffectModel version 20211111 (see `\module\doc\LEffectModel_Manual_20211111.pdf` for details)
 
 
 ## Getting Started
-The component can be used in any Landscape Model based on core version 1.11 or newer. See the Landscape
+The component can be used in any Landscape Model based on core version 1.13 or newer. See the Landscape
 Model core's `README` for general tips on how to add a component to a Landscape Model.
 
 ### Prerequisites
@@ -263,6 +263,18 @@ The number of internal Monte Carlo runs performed by the module.
 `NumberRuns` expects its values to be of type `int`.
 Values have to refer to the `global` scale.
 Values of the `NumberRuns` input may not have a physical unit.
+
+#### UseTemperatureInput
+Specifies whether the empirical water temperature data from the WaterTemperature input is used or this data is ignored and a forcing function is applied instead.  
+`UseTemperatureInput` expects its values to be of type `bool`.
+Values have to refer to the `global` scale.
+Values of the `UseTemperatureInput` input may not have a physical unit.
+
+#### WaterTemperature
+A timeseries of daily water temperatures. Only used if UseTemperatureInput is true.  
+`WaterTemperature` expects its values to be of type `ndarray`.
+Values have to refer to the `time/day` scale.
+The physical unit of the `WaterTemperature` input values is `°C`.
 
 ### Outputs
 #### AdultMetaPopulation

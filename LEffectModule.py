@@ -13,6 +13,7 @@ class LEffectModel(base.Component):
     """Encapsulation of the LEffectModel module as a Landscape Model component."""
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.1.0", "2022-03-08"),
         base.VersionInfo("2.0.14", "2021-12-10"),
         base.VersionInfo("2.0.13", "2021-11-18"),
         base.VersionInfo("2.0.12", "2021-10-12"),
@@ -131,6 +132,7 @@ class LEffectModel(base.Component):
     VERSION.changed("2.0.13", "Scale of multiplication factors from `global` to `other/factor` ")
     VERSION.changed("2.0.13", "Reports element names of outputs")
     VERSION.changed("2.0.14", "Specifies offset of outputs")
+    VERSION.changed("2.1.0", "Module updated to version 20211111")
 
     def __init__(self, name, observer, store):
         """
@@ -142,7 +144,7 @@ class LEffectModel(base.Component):
             store: The default store of the component.
         """
         super(LEffectModel, self).__init__(name, observer, store)
-        self._module = base.Module("LEffectModel", "20201208", r"\module\doc\LEffectModel_Manual.pdf")
+        self._module = base.Module("LEffectModel", "20211111", r"\module\doc\LEffectModel_Manual_20211111.pdf")
         self._inputs = base.InputContainer(self, [
             base.Input(
                 "ProcessingPath",
@@ -306,6 +308,19 @@ class LEffectModel(base.Component):
                 (attrib.Class(int, 1), attrib.Scales("global", 1), attrib.Unit(None)),
                 self.default_observer,
                 description="The number of internal Monte Carlo runs performed by the module."
+            ),
+            base.Input(
+                "UseTemperatureInput",
+                (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
+                self._defaultObserver,
+                description="Specifies whether the empirical water temperature data from the WaterTemperature input is "
+                "used or this data is ignored and a forcing function is applied instead."
+            ),
+            base.Input(
+                "WaterTemperature",
+                (attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("°C")),
+                self._defaultObserver,
+                description="A timeseries of daily water temperatures. Only used if UseTemperatureInput is true."
             )
         ])
         self._outputs = base.OutputContainer(self, [
@@ -547,6 +562,18 @@ class LEffectModel(base.Component):
                 number_of_warm_up_years,
                 recovery_period_years
             )
+            if self.inputs["UseTemperatureInput"].read().values:
+                self.prepare_water_temperatures(
+                    os.path.join(
+                        processing_path,
+                        "ETInput",
+                        "CatchmentModelSystem",
+                        "data",
+                        "water_temperature_101096_1979-2020.csv"
+                    ),
+                    simulation_start.year - number_of_warm_up_years,
+                    simulation_start.year + len(time_slices) + recovery_period_years
+                )
             self.run_module(processing_path)
             # noinspection SpellCheckingInspection
             self.store_results_per_day(
@@ -885,7 +912,11 @@ class LEffectModel(base.Component):
             f.write("useCSV:,0,use the slow csv input format (1) or much faster msgpack format(0)\n")
             f.write(
                 f"stepsInHr:,{self._inputs['NumberOfStepsWithinOneHour'].read().values},"
-                "the number of steps within 1 hourly time step for GUTS simulation"
+                "the number of steps within 1 hourly time step for GUTS simulation\n"
+            )
+            f.write(
+                f"useTemperatureData:,{'1' if self.inputs['UseTemperatureInput'].read().values else '0'},"
+                "define water temperature from data (1) or forcing functions (0)"
             )
 
     def prepare_control_individual_model(self, control_file, simulation_start, year_index):
@@ -1071,3 +1102,24 @@ class LEffectModel(base.Component):
                 ),
                 offset=(first_year, None, None)
             )
+
+    def prepare_water_temperatures(
+            self, temperature_file, from_year, to_year):
+        """
+        Prepares a CSV-file containing daily water temperatures.
+
+        Args:
+            temperature_file: The file path for the temperature file.
+            from_year: The first year for which temperature data is needed.
+            to_year: The last year for which temperature data is needed.
+
+        Returns:
+            Nothing.
+        """
+        water_temperatures = self.inputs["WaterTemperature"].read(
+            select={"time/day": {"from": datetime.date(from_year, 1, 1), "to": datetime.date(to_year + 1, 1, 1)}})
+        day = datetime.date(from_year, 1, 1)
+        with open(temperature_file, "w") as f:
+            for value in water_temperatures.values:
+                f.write(f"{day.strftime('%Y%m%d')},{round(float(value), 2)}\n")
+                day += datetime.timedelta(1)
