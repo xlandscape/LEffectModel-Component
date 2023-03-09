@@ -1,5 +1,15 @@
 # Changelog
-This is the changelog for the LEffectModel component. It was automatically created on 2022-03-08.
+This is the changelog for the LEffectModel component. It was automatically created on 2023-03-09.
+
+## [2.1.1] - 2023-03-09
+
+### Added
+
+### Changed
+- Module updated to version 20211111-1 (removed example files due to file size restrictions)
+
+### Fixed
+
 
 ## [2.1] - 2022-03-08
 
