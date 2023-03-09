@@ -321,13 +321,6 @@ class LEffectModel(base.Component):
                 (attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("°C")),
                 self._defaultObserver,
                 description="A timeseries of daily water temperatures. Only used if UseTemperatureInput is true."
-            ),
-            base.Input(
-                "ReachSelection",
-                (attrib.Class(list[int]), attrib.Scales("global"), attrib.Unit(None)),
-                self._defaultObserver,
-                description="Specifies for which reaches effects are simulated. An empty list results in the "
-                            "simulation of effects for all reaches in the scenario."
             )
         ])
         self._outputs = base.OutputContainer(self, [
@@ -561,9 +554,6 @@ class LEffectModel(base.Component):
         time_slices = self.get_time_slices()
         self.prepare_concentrations(
             os.path.join(processing_path, "ETInput", "CatchmentModelSystem", "data"), time_slices, simulation_start)
-        number_reaches = len(self._inputs["ReachSelection"].read().values)
-        if number_reaches == 0:
-            number_reaches = self._inputs["Concentrations"].describe()["shape"][1]
         if model in ["LPopSD", "LPopIT"]:
             self.prepare_control_population_model(
                 os.path.join(
@@ -615,7 +605,7 @@ class LEffectModel(base.Component):
                 len(time_slices),
                 number_of_warm_up_years,
                 recovery_period_years,
-                number_reaches,
+                self._inputs["Concentrations"].describe()["shape"][1],
                 len(multiplication_factors),
                 number_runs
             )
@@ -648,7 +638,7 @@ class LEffectModel(base.Component):
                 os.path.join(processing_path, "ecotalk", model + "ModelSystem_MoS_{}", "x1"),
                 {"guts_survival_reaches.txt_mfactors.txt": "GutsSurvivalReaches"},
                 len(time_slices),
-                number_reaches,
+                self._inputs["Concentrations"].describe()["shape"][1],
                 len(multiplication_factors),
                 simulation_start.year
             )
@@ -812,15 +802,12 @@ class LEffectModel(base.Component):
             Nothing.
         """
         reaches = self.inputs["Concentrations"].describe()["element_names"][1].get_values()
-        selected_reaches = self.inputs["ReachSelection"].read().values
-        if len(selected_reaches) == 0:
-            selected_reaches = reaches
         driver = ogr.GetDriverByName("ESRI Shapefile")
         reach_list_data_source = driver.CreateDataSource(reaches_file)
         reach_list_layer = reach_list_data_source.CreateLayer("reaches", None, ogr.wkbPoint)
         reach_list_layer.CreateField(ogr.FieldDefn("key", ogr.OFTInteger))
         reach_list_layer_definition = reach_list_layer.GetLayerDefn()
-        for i, feature in enumerate(selected_reaches):
+        for i, feature in enumerate(reaches):
             reach = ogr.Feature(reach_list_layer_definition)
             first_point = ogr.Geometry(ogr.wkbPoint)
             first_point.AddPoint(0, 0, 0)
@@ -863,19 +850,13 @@ class LEffectModel(base.Component):
             Nothing.
         """
         reaches = self.inputs["Concentrations"].describe()["element_names"][1].get_values()
-        if isinstance(reaches, np.ndarray):
-            reaches = reaches.tolist()
-        selected_reaches = self.inputs["ReachSelection"].read().values
-        if len(selected_reaches) == 0:
-            selected_reaches = reaches
         start_day_of_year = simulation_start.timetuple().tm_yday
-        concentrations = [[]] * len(selected_reaches)
+        concentrations = [[]] * len(reaches)
         for y in range(len(time_slices)):
             time_slice_from = 0 if y == 0 else time_slices[y - 1]
-            for i, reach in enumerate(selected_reaches):
-                reach_index = reaches.index(reach)
+            for i, reach in enumerate(reaches):
                 reported_concentrations = self.inputs["Concentrations"].read(
-                    slices=(slice(time_slice_from, time_slices[y]), reach_index)).values
+                    slices=(slice(time_slice_from, time_slices[y]), i)).values
                 concentrations[i] = [0.] * 8786
                 concentrations[i][0] = float(reach)
                 start_index = (start_day_of_year - 1) * 24 + 1 if y == 0 else 1
@@ -1054,9 +1035,6 @@ class LEffectModel(base.Component):
                 datetime.date(first_year + number_years + recovery_period_years, 1, 1) -
                 datetime.date(first_year - number_warm_up_years, 1, 1)
         ).days
-        element_names = self.inputs["ReachSelection"]
-        if len(element_names.read().values) == 0:
-            element_names = self.inputs["Concentrations"].describe()["element_names"][1]
         for file_name, output_name in result_set.items():
             self._outputs[output_name].set_values(
                 np.ndarray,
@@ -1064,7 +1042,7 @@ class LEffectModel(base.Component):
                 chunks=(number_days, 1, 1, 1),
                 element_names=(
                     None,
-                    element_names.provider.output.store_name,
+                    self.inputs["Concentrations"].describe()["element_names"][1],
                     self.inputs["MultiplicationFactors"].describe()["element_names"][0],
                     None
                 ),
@@ -1109,9 +1087,6 @@ class LEffectModel(base.Component):
         """
         for file_name, output_name in result_set.items():
             values = np.zeros((number_years, number_reaches, number_multiplication_factors), np.float)
-            element_names = self.inputs["ReachSelection"]
-            if len(element_names.read().values) == 0:
-                element_names = self.inputs["Concentrations"].describe()["element_names"][1]
             for y in range(number_years):
                 with open(os.path.join(time_slice_path.format(y), file_name)) as f:
                     for i, line in enumerate(f):
@@ -1122,7 +1097,7 @@ class LEffectModel(base.Component):
                 chunks=(number_years, number_reaches, number_multiplication_factors),
                 element_names=(
                     None,
-                    element_names.provider.output.store_name,
+                    self.inputs["Concentrations"].describe()["element_names"][1],
                     self.inputs["MultiplicationFactors"].describe()["element_names"][0]
                 ),
                 offset=(first_year, None, None)
