@@ -1,7 +1,0 @@
-Component,CatchmentGUTSITInd,inhabitantClass
-kd:,0.0005541,dominant rate constant
-hb:,0,background hazard rate [d-1]
-m:,0.4429,threshold
-beta:,1.582,slope
-Component,CatchmentLandscape,landscapeClass
-conversionToGutsFactor:,1000000.0,mg/L to nanogram/L

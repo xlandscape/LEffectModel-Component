@@ -144,7 +144,7 @@ class LEffectModel(base.Component):
             store: The default store of the component.
         """
         super(LEffectModel, self).__init__(name, observer, store)
-        self._module = base.Module("LEffectModel", "20211111", r"\module\doc\LEffectModel_Manual_20211111.pdf")
+        self._module = base.Module("LEffectModel", "20211111-1", r"\module\doc\LEffectModel_Manual_20211111.pdf")
         self._inputs = base.InputContainer(self, [
             base.Input(
                 "ProcessingPath",
