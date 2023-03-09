@@ -1,4 +1,0 @@
-ModelIO invalidateRootDirectories.
-CatchmentConcDataBase removeAllDataBases.
-(ModelProject onModel: #CatchmentGUTSITModelSystem) runModelProjectForeground.
-Smalltalk quitPrimitive

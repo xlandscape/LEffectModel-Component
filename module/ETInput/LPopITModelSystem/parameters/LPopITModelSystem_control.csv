@@ -1,7 +1,0 @@
-startYear:,1989,start year of the simulation
-endYear:,2020,last year of the simulation
-startApplicationYear:,1992,start year of pesticide application
-endApplicationYear:,2015,last year of pesticide application
-useCSV:,0,use the slow csv input format (1) or much faster msgpack format(0)
-stepsInHr:,2,the number of steps within 1 hourly time step for the GUTS simulation
-useTemperatureData:,0,define water temperature from data (1) or forcing functions (0)

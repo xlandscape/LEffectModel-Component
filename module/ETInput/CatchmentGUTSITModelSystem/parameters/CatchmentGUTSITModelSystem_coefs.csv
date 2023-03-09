@@ -1,7 +1,0 @@
-Component,model-dependent,inhabitantClass
-kd:,0.0132984,dominant rate constant [1/d]
-hb:,0,background hazard rate [1/d]
-m:,0.4429,threshold distribution [ng/L]
-beta:,1.582,width of distribution []
-Component,model-dependent,landscapeClass
-conversionToGutsFactor:,1000000.0,mg/L to nanogram/L

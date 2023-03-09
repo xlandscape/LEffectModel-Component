@@ -17,15 +17,15 @@
 ## About the project
 Encapsulation of the LEffectModel module as a Landscape Model component.  
 This is an automatically generated documentation based on the available code and in-line documentation. The current
-version of this document is from 2022-03-08.  
+version of this document is from 2023-03-09.  
 
 ### Built with
-* Landscape Model core version 1.13
-* LEffectModel version 20211111 (see `\module\doc\LEffectModel_Manual_20211111.pdf` for details)
+* Landscape Model core version 1.13.1
+* LEffectModel version 20211111-1 (see `\module\doc\LEffectModel_Manual_20211111.pdf` for details)
 
 
 ## Getting Started
-The component can be used in any Landscape Model based on core version 1.13 or newer. See the Landscape
+The component can be used in any Landscape Model based on core version 1.13.1 or newer. See the Landscape
 Model core's `README` for general tips on how to add a component to a Landscape Model.
 
 ### Prerequisites
@@ -107,149 +107,142 @@ $(MultiplicationFactors)
 
 ### Inputs
 #### ProcessingPath
-The working directory for the module. It is used for all files prepared as module inputs
-or generated as (temporary) module outputs.  
+The working directory for the module. It is used for all files prepared as module inputs or generated as (temporary)
+module outputs.
 `ProcessingPath` expects its values to be of type `str`.
 Values of the `ProcessingPath` input may not have a physical unit.
 Values have to refer to the `global` scale.
 
 #### Model
-Specifies the model that is applied to the input data. This can either be an individual
-based GUTS model (choices starting with _CatchmentGUTS_) or a population based effect model (choices
-starting with _LPop_). The choice of model also determines whether sudden death (choices ending with 
-_SD_) or an internal threshold (choices ending with _IT_) is assumed.  
+Specifies the model that is applied to the input data. This can either be an individual based GUTS model (choices
+starting with _CatchmentGUTS_) or a population based effect model (choices starting with _LPop_). The choice of model
+also determines whether sudden death (choices ending with  _SD_) or an internal threshold (choices ending with _IT_) is
+assumed.
 `Model` expects its values to be of type `str`.
 Values of the `Model` input may not have a physical unit.
 Values have to refer to the `global` scale.
 Allowed values are: `CatchmentGUTSSD`, `CatchmentGUTSIT`, `LPopSD`, `LPopIT`.
 
 #### MinimumClutchSize
-The minimum clutch size (minClutchSize) used by population models.  
+The minimum clutch size (minClutchSize) used by population models.
 `MinimumClutchSize` expects its values to be of type `int`.
 Values of the `MinimumClutchSize` input may not have a physical unit.
 Values have to refer to the `global` scale.
 
 #### BackgroundMortalityRate
-The background mortality rate (backgroundMortality) used by population models.  
+The background mortality rate (backgroundMortality) used by population models.
 `BackgroundMortalityRate` expects its values to be of type `float`.
 The physical unit of the `BackgroundMortalityRate` input values is `1/d`.
 Values have to refer to the `global` scale.
 
 #### DensityDependentMortalityRate
-The density-dependent mortality rate (muDD) used by population models.  
+The density-dependent mortality rate (muDD) used by population models.
 `DensityDependentMortalityRate` expects its values to be of type `float`.
 The physical unit of the `DensityDependentMortalityRate` input values is `m²/d`.
 Values have to refer to the `global` scale.
 
 #### DominantRateConstant
-The dominant rate constant (kd) used by all models.  
+The dominant rate constant (kd) used by all models.
 `DominantRateConstant` expects its values to be of type `float`.
 The physical unit of the `DominantRateConstant` input values is `1/d`.
 Values have to refer to the `global` scale.
 
 #### BackgroundHazardRate
-The background hazard rate (hb) used by all models.  
+The background hazard rate (hb) used by all models.
 `BackgroundHazardRate` expects its values to be of type `float`.
 The physical unit of the `BackgroundHazardRate` input values is `1/d`.
 Values have to refer to the `global` scale.
 
 #### ParameterZOfSDModel
-The threshold concentration (z) used by sudden death models.  
+The threshold concentration (z) used by sudden death models.
 `ParameterZOfSDModel` expects its values to be of type `float`.
 The physical unit of the `ParameterZOfSDModel` input values is `ng/l`.
 Values have to refer to the `global` scale.
 
 #### ParameterBOfSDModel
-The killing rate (b) used by sudden death models.  
+The killing rate (b) used by sudden death models.
 `ParameterBOfSDModel` expects its values to be of type `float`.
 The physical unit of the `ParameterBOfSDModel` input values is `l/(ng*d)`.
 Values have to refer to the `global` scale.
 
 #### ThresholdOfITModel
-The threshold distribution  (m) used by internal threshold models.  
+The threshold distribution  (m) used by internal threshold models.
 `ThresholdOfITModel` expects its values to be of type `float`.
 The physical unit of the `ThresholdOfITModel` input values is `ng/l`.
 Values have to refer to the `global` scale.
 
 #### BetaOfITModel
-The width of distribution (beta) used by internal threshold models.  
+The width of distribution (beta) used by internal threshold models.
 `BetaOfITModel` expects its values to be of type `float`.
 The physical unit of the `BetaOfITModel` input values is `1`.
 Values have to refer to the `global` scale.
 
 #### AverageTemperatureParameterOfForcingFunction
-The average temperature parameter of the forcing function (envTav) used by population
-models.  
+The average temperature parameter of the forcing function (envTav) used by population models.
 `AverageTemperatureParameterOfForcingFunction` expects its values to be of type `float`.
 The physical unit of the `AverageTemperatureParameterOfForcingFunction` input values is `°C`.
 Values have to refer to the `global` scale.
 
 #### AmplitudeTemperatureFluctuationsParameter
-The amplitude temperature fluctuations parameter of the forcing function (envTamp) used
-by population models.  
+The amplitude temperature fluctuations parameter of the forcing function (envTamp) used by population models.
 `AmplitudeTemperatureFluctuationsParameter` expects its values to be of type `float`.
 The physical unit of the `AmplitudeTemperatureFluctuationsParameter` input values is `°C`.
 Values have to refer to the `global` scale.
 
 #### ShiftForwardOfDayNumberWithLowestTemperature
-The temporal shift forward with the lowest temperature (envTMinShift) used by population
-models.  
+The temporal shift forward with the lowest temperature (envTMinShift) used by population models.
 `ShiftForwardOfDayNumberWithLowestTemperature` expects its values to be of type `int`.
 The physical unit of the `ShiftForwardOfDayNumberWithLowestTemperature` input values is `d`.
 Values have to refer to the `global` scale.
 
 #### PerIndividualProbabilityOfMigration
-The probability of an individual to migrate to an adjacent reach (migrationProb) used by
-population models.  
+The probability of an individual to migrate to an adjacent reach (migrationProb) used by population models.
 `PerIndividualProbabilityOfMigration` expects its values to be of type `float`.
 The physical unit of the `PerIndividualProbabilityOfMigration` input values is `1/d`.
 Values have to refer to the `global` scale.
 
 #### ProbabilityOfAMigratingIndividualToMoveDownstream
-The probability of a migrating individual to migrate to the downstream reach (instead of
-the upstream reach; downStreamProb) used by population models.  
+The probability of a migrating individual to migrate to the downstream reach (instead of the upstream reach;
+downStreamProb) used by population models.
 `ProbabilityOfAMigratingIndividualToMoveDownstream` expects its values to be of type `float`.
 The physical unit of the `ProbabilityOfAMigratingIndividualToMoveDownstream` input values is `1`.
 Values have to refer to the `global` scale.
 
 #### SimulationStart
-The first time step for which concentration input data is provided. This input also 
-defines the base year for LEffectModel simulations. Actual simulation starts `NumberOfWarmUpYears`
-earlier and ends `RecoveryPeriodYears` later.  
+The first time step for which concentration input data is provided. This input also  defines the base year for
+LEffectModel simulations. Actual simulation starts `NumberOfWarmUpYears` earlier and ends `RecoveryPeriodYears` later.
 `SimulationStart` expects its values to be of type `date`.
 Values of the `SimulationStart` input may not have a physical unit.
 Values have to refer to the `global` scale.
 
 #### Concentrations
-The substance concentrations reported starting with the `SimulationStart`.
-Concentrations during the warm-up years and during the recovery period are assumed to be globally 
-zero.  
+The substance concentrations reported starting with the `SimulationStart`. Concentrations during the warm-up years and
+during the recovery period are assumed to be globally  zero.
 `Concentrations` expects its values to be of type `ndarray`.
 The physical unit of the `Concentrations` input values is `ng/l`.
 Values have to refer to the `time/hour, space/base_geometry` scale.
 
 #### NumberOfWarmUpYears
-The number of years the module runs before the year of the `SimulationStart`.  
+The number of years the module runs before the year of the `SimulationStart`.
 `NumberOfWarmUpYears` expects its values to be of type `int`.
 The physical unit of the `NumberOfWarmUpYears` input values is `y`.
 Values have to refer to the `global` scale.
 
 #### RecoveryPeriodYears
-The number of years the module runs after the last year for which `Concentration` data is
-available.  
+The number of years the module runs after the last year for which `Concentration` data is available.
 `RecoveryPeriodYears` expects its values to be of type `int`.
 The physical unit of the `RecoveryPeriodYears` input values is `y`.
 Values have to refer to the `global` scale.
 
 #### NumberOfStepsWithinOneHour
-The number of steps within one hour used by the GUTS simulation.  
+The number of steps within one hour used by the GUTS simulation.
 `NumberOfStepsWithinOneHour` expects its values to be of type `int`.
 The physical unit of the `NumberOfStepsWithinOneHour` input values is `1`.
 Values have to refer to the `global` scale.
 
 #### MultiplicationFactors
-The multiplication factors applied to enable LP50 analyses. Include a factor of 1 for
-simulations returning unscaled LEffectModel results.  
+The multiplication factors applied to enable LP50 analyses. Include a factor of 1 for simulations returning unscaled
+LEffectModel results.
 `MultiplicationFactors` expects its values to be of type `list`.
 The physical unit of the `MultiplicationFactors` input values is `1`.
 Values have to refer to the `other/factor` scale.
@@ -259,19 +252,20 @@ Values have to refer to the `other/factor` scale.
 Values have to refer to the `global` scale.
 
 #### NumberRuns
-The number of internal Monte Carlo runs performed by the module.  
+The number of internal Monte Carlo runs performed by the module.
 `NumberRuns` expects its values to be of type `int`.
 Values have to refer to the `global` scale.
 Values of the `NumberRuns` input may not have a physical unit.
 
 #### UseTemperatureInput
-Specifies whether the empirical water temperature data from the WaterTemperature input is used or this data is ignored and a forcing function is applied instead.  
+Specifies whether the empirical water temperature data from the WaterTemperature input is used or this data is ignored
+and a forcing function is applied instead.
 `UseTemperatureInput` expects its values to be of type `bool`.
 Values have to refer to the `global` scale.
 Values of the `UseTemperatureInput` input may not have a physical unit.
 
 #### WaterTemperature
-A timeseries of daily water temperatures. Only used if UseTemperatureInput is true.  
+A timeseries of daily water temperatures. Only used if UseTemperatureInput is true.
 `WaterTemperature` expects its values to be of type `ndarray`.
 Values have to refer to the `time/day` scale.
 The physical unit of the `WaterTemperature` input values is `°C`.
