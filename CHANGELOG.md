@@ -1,6 +1,20 @@
 # Changelog
 
-This is the changelog for the LEffectModel component. It was automatically created on 2023-09-11.
+This is the changelog for the LEffectModel component. It was automatically created on 2023-09-12.
+
+## [2.1.3] - 2023-09-12
+
+### Added
+
+- Creation of repository info during documentation
+
+- Repository info, changelog, contributing note and readme to module
+
+### Changed
+
+- Extended module information for Squeak runtime environment
+
+### Fixed
 
 ## [2.1.2] - 2023-09-11
 
@@ -18,7 +32,7 @@ This is the changelog for the LEffectModel component. It was automatically creat
 
 ### Changed
 
-- Module updated to version 20211111-1 (removed example files due to file size restrictions)
+- Module updated to version 20211111-1
 
 ### Fixed
 
