@@ -13,6 +13,7 @@ class LEffectModel(base.Component):
     """Encapsulation of the LEffectModel module as a Landscape Model component."""
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.1.3", "2023-09-12"),
         base.VersionInfo("2.1.2", "2023-09-11"),
         base.VersionInfo("2.1.1", "2023-03-09"),
         base.VersionInfo("2.1.0", "2022-03-08"),
@@ -135,9 +136,11 @@ class LEffectModel(base.Component):
     VERSION.changed("2.0.13", "Reports element names of outputs")
     VERSION.changed("2.0.14", "Specifies offset of outputs")
     VERSION.changed("2.1.0", "Module updated to version 20211111")
-    VERSION.changed(
-        "2.1.1", "Module updated to version 20211111-1 (removed example files due to file size restrictions)")
+    VERSION.changed("2.1.1", "Module updated to version 20211111-1")
     VERSION.added("2.1.2", "Information on runtime environment")
+    VERSION.changed("2.1.3", "Extended module information for Squeak runtime environment")
+    VERSION.added("2.1.3", "Creation of repository info during documentation")
+    VERSION.added("2.1.3", "Repository info, changelog, contributing note and readme to module")
 
     def __init__(self, name, observer, store):
         """
@@ -154,7 +157,15 @@ class LEffectModel(base.Component):
             "20211111-1",
             "module",
             r"\module\doc\LEffectModel_Manual_20211111.pdf",
-            base.Module("Squeak", "5.3", "module", "module/release-notes/README", None)
+            base.Module(
+                "Squeak",
+                "5.3",
+                "module",
+                "https://squeak.org/",
+                None,
+                True,
+                "module/release-notes/README"
+            )
         )
         self._inputs = base.InputContainer(self, [
             base.Input(
