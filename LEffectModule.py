@@ -13,6 +13,7 @@ class LEffectModel(base.Component):
     """Encapsulation of the LEffectModel module as a Landscape Model component."""
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.1.4", "2023-09-13"),
         base.VersionInfo("2.1.3", "2023-09-12"),
         base.VersionInfo("2.1.2", "2023-09-11"),
         base.VersionInfo("2.1.1", "2023-03-09"),
@@ -141,6 +142,9 @@ class LEffectModel(base.Component):
     VERSION.changed("2.1.3", "Extended module information for Squeak runtime environment")
     VERSION.added("2.1.3", "Creation of repository info during documentation")
     VERSION.added("2.1.3", "Repository info, changelog, contributing note and readme to module")
+    VERSION.changed("2.1.4", "Spatial scale of `Concentrations` input")
+    VERSION.added("2.1.4", "Unit attribute to `Verbosity` input")
+    VERSION.changed("2.1.4", "Spatial scales of outputs")
 
     def __init__(self, name, observer, store):
         """
@@ -291,7 +295,7 @@ class LEffectModel(base.Component):
                 (
                     attrib.Class(np.ndarray, 1),
                     attrib.Unit("ng/l", 1),
-                    attrib.Scales("time/hour, space/base_geometry", 1)
+                    attrib.Scales("time/hour, space/reach", 1)
                 ),
                 self.default_observer,
                 description="""The substance concentrations reported starting with the `SimulationStart`.
@@ -324,7 +328,11 @@ class LEffectModel(base.Component):
                 description="""The multiplication factors applied to enable LP50 analyses. Include a factor of 1 for
                 simulations returning unscaled LEffectModel results."""
             ),
-            base.Input("Verbosity", (attrib.Class(int, 1), attrib.Scales("global", 1)), self.default_observer),
+            base.Input(
+                "Verbosity",
+                (attrib.Class(int, 1), attrib.Scales("global", 1), attrib.Unit(None)),
+                self.default_observer
+            ),
             base.Input(
                 "NumberRuns",
                 (attrib.Class(int, 1), attrib.Scales("global", 1), attrib.Unit(None)),
@@ -368,7 +376,7 @@ class LEffectModel(base.Component):
                 "AdultPopulationByReach",
                 store,
                 self,
-                {"data_type": np.int, "scales": "time/day, space/base_geometry, other/factor, other/runs", "unit": "1"},
+                {"data_type": np.int, "scales": "time/day, space/reach, other/factor, other/runs", "unit": "1"},
                 "The number of adults.",
                 {
                     "type": np.ndarray,
@@ -405,7 +413,7 @@ class LEffectModel(base.Component):
                 "EmbryoPopulationByReach",
                 store,
                 self,
-                {"data_type": np.int, "scales": "time/day, space/base_geometry, other/factor, other/runs", "unit": "1"},
+                {"data_type": np.int, "scales": "time/day, space/reach, other/factor, other/runs", "unit": "1"},
                 "The number of embryos.",
                 {
                     "type": np.ndarray,
@@ -460,7 +468,7 @@ class LEffectModel(base.Component):
                 "JuvenileAndAdultPopulationByReach",
                 store,
                 self,
-                {"data_type": np.int, "scales": "time/day, space/base_geometry, other/factor, other/runs", "unit": "1"},
+                {"data_type": np.int, "scales": "time/day, space/reach, other/factor, other/runs", "unit": "1"},
                 "The number of juveniles and adults combined.",
                 {
                     "type": np.ndarray,
@@ -497,7 +505,7 @@ class LEffectModel(base.Component):
                 "JuvenilePopulationByReach",
                 store,
                 self,
-                {"data_type": np.int, "scales": "time/day, space/base_geometry, other/factor, other/runs", "unit": "1"},
+                {"data_type": np.int, "scales": "time/day, space/reach, other/factor, other/runs", "unit": "1"},
                 "The number of juveniles.",
                 {
                     "type": np.ndarray,
@@ -516,7 +524,7 @@ class LEffectModel(base.Component):
                 "GutsSurvivalReaches",
                 store,
                 self,
-                {"scales": "time/year, space/base_geometry, other/factor", "unit": "1"},
+                {"scales": "time/year, space/reach, other/factor", "unit": "1"},
                 "The probability of an individual to survive.",
                 {
                     "type": np.ndarray,

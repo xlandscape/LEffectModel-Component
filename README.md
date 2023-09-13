@@ -18,16 +18,16 @@
 
 Encapsulation of the LEffectModel module as a Landscape Model component.  
 This is an automatically generated documentation based on the available code and in-line documentation. The current
-version of this document is from 2023-09-12.
+version of this document is from 2023-09-13.
 
 ### Built with
 
-* Landscape Model core version 1.15.2
+* Landscape Model core version 1.15.3
 * LEffectModel version 20211111-1 (see `\module\doc\LEffectModel_Manual_20211111.pdf` for details)
 
 ## Getting Started
 
-The component can be used in any Landscape Model based on core version 1.15.2 or newer. See the Landscape
+The component can be used in any Landscape Model based on core version 1.15.3 or newer. See the Landscape
 Model core's `README` for general tips on how to add a component to a Landscape Model.
 
 ### Prerequisites
@@ -244,7 +244,7 @@ The substance concentrations reported starting with the `SimulationStart`. Conce
 during the recovery period are assumed to be globally  zero.
 `Concentrations` expects its values to be of type `ndarray`.
 The physical unit of the `Concentrations` input values is `ng/l`.
-Values have to refer to the `time/hour, space/base_geometry` scale.
+Values have to refer to the `time/hour, space/reach` scale.
 
 #### NumberOfWarmUpYears
 
@@ -279,6 +279,7 @@ Values have to refer to the `other/factor` scale.
 
 `Verbosity` expects its values to be of type `int`.
 Values have to refer to the `global` scale.
+Values of the `Verbosity` input may not have a physical unit.
 
 #### NumberRuns
 
@@ -328,7 +329,7 @@ Dimension 3 spans the number of items in the [MultiplicationFactors](#Multiplica
 Dimension 4 spans the `NumberRuns`.
 Chunking of the array is for fast retrieval of time series.
 Individual array elements have a type of `int`.
-The values apply to the following scale: `time/day, space/base_geometry, other/factor, other/runs`.
+The values apply to the following scale: `time/day, space/reach, other/factor, other/runs`.
 The physical unit of the values is `1`.
 #### EmbryoMetaPopulation
 The total number of all embryos.  
@@ -355,7 +356,7 @@ Dimension 3 spans the number of items in the [MultiplicationFactors](#Multiplica
 Dimension 4 spans the `NumberRuns`.
 Chunking of the array is for fast retrieval of time series.
 Individual array elements have a type of `int`.
-The values apply to the following scale: `time/day, space/base_geometry, other/factor, other/runs`.
+The values apply to the following scale: `time/day, space/reach, other/factor, other/runs`.
 The physical unit of the values is `1`.
 #### ExtantLocalPopulationsMetaPopulation
 The total number of populations that went extant.  
@@ -395,7 +396,7 @@ Dimension 3 spans the number of items in the [MultiplicationFactors](#Multiplica
 Dimension 4 spans the `NumberRuns`.
 Chunking of the array is for fast retrieval of time series.
 Individual array elements have a type of `int`.
-The values apply to the following scale: `time/day, space/base_geometry, other/factor, other/runs`.
+The values apply to the following scale: `time/day, space/reach, other/factor, other/runs`.
 The physical unit of the values is `1`.
 #### JuvenileMetaPopulation
 The total number of all juveniles.  
@@ -422,7 +423,7 @@ Dimension 3 spans the number of items in the [MultiplicationFactors](#Multiplica
 Dimension 4 spans the `NumberRuns`.
 Chunking of the array is for fast retrieval of time series.
 Individual array elements have a type of `int`.
-The values apply to the following scale: `time/day, space/base_geometry, other/factor, other/runs`.
+The values apply to the following scale: `time/day, space/reach, other/factor, other/runs`.
 The physical unit of the values is `1`.
 #### GutsSurvivalReaches
 The probability of an individual to survive.  
@@ -435,7 +436,7 @@ Dimension 1 spans the number of years at least partly covered by the [Concentrat
 Dimension 2 spans the number of reaches reported by the [Concentrations](#Concentrations) input.
 Dimension 3 spans the number of items in the [MultiplicationFactors](#MultiplicationFactors) input.
 Chunking of the array is for allowing compression (only one chunk used).
-The values apply to the following scale: `time/year, space/base_geometry, other/factor`.
+The values apply to the following scale: `time/year, space/reach, other/factor`.
 The physical unit of the values is `1`.
 
 ## Roadmap
