@@ -1,6 +1,20 @@
 # Changelog
 
-This is the changelog for the LEffectModel component. It was automatically created on 2023-09-12.
+This is the changelog for the LEffectModel component. It was automatically created on 2023-09-13.
+
+## [2.1.4] - 2023-09-13
+
+### Added
+
+- Unit attribute to `Verbosity` input
+
+### Changed
+
+- Spatial scale of `Concentrations` input
+
+- Spatial scales of outputs
+
+### Fixed
 
 ## [2.1.3] - 2023-09-12
 
