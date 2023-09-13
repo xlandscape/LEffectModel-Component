@@ -291,7 +291,7 @@ class LEffectModel(base.Component):
                 (
                     attrib.Class(np.ndarray, 1),
                     attrib.Unit("ng/l", 1),
-                    attrib.Scales("time/hour, space/base_geometry", 1)
+                    attrib.Scales("time/hour, space/reach", 1)
                 ),
                 self.default_observer,
                 description="""The substance concentrations reported starting with the `SimulationStart`.
@@ -324,7 +324,11 @@ class LEffectModel(base.Component):
                 description="""The multiplication factors applied to enable LP50 analyses. Include a factor of 1 for
                 simulations returning unscaled LEffectModel results."""
             ),
-            base.Input("Verbosity", (attrib.Class(int, 1), attrib.Scales("global", 1)), self.default_observer),
+            base.Input(
+                "Verbosity",
+                (attrib.Class(int, 1), attrib.Scales("global", 1), attrib.Unit(None)),
+                self.default_observer
+            ),
             base.Input(
                 "NumberRuns",
                 (attrib.Class(int, 1), attrib.Scales("global", 1), attrib.Unit(None)),
@@ -368,7 +372,7 @@ class LEffectModel(base.Component):
                 "AdultPopulationByReach",
                 store,
                 self,
-                {"data_type": np.int, "scales": "time/day, space/base_geometry, other/factor, other/runs", "unit": "1"},
+                {"data_type": np.int, "scales": "time/day, space/reach, other/factor, other/runs", "unit": "1"},
                 "The number of adults.",
                 {
                     "type": np.ndarray,
@@ -405,7 +409,7 @@ class LEffectModel(base.Component):
                 "EmbryoPopulationByReach",
                 store,
                 self,
-                {"data_type": np.int, "scales": "time/day, space/base_geometry, other/factor, other/runs", "unit": "1"},
+                {"data_type": np.int, "scales": "time/day, space/reach, other/factor, other/runs", "unit": "1"},
                 "The number of embryos.",
                 {
                     "type": np.ndarray,
@@ -460,7 +464,7 @@ class LEffectModel(base.Component):
                 "JuvenileAndAdultPopulationByReach",
                 store,
                 self,
-                {"data_type": np.int, "scales": "time/day, space/base_geometry, other/factor, other/runs", "unit": "1"},
+                {"data_type": np.int, "scales": "time/day, space/reach, other/factor, other/runs", "unit": "1"},
                 "The number of juveniles and adults combined.",
                 {
                     "type": np.ndarray,
@@ -497,7 +501,7 @@ class LEffectModel(base.Component):
                 "JuvenilePopulationByReach",
                 store,
                 self,
-                {"data_type": np.int, "scales": "time/day, space/base_geometry, other/factor, other/runs", "unit": "1"},
+                {"data_type": np.int, "scales": "time/day, space/reach, other/factor, other/runs", "unit": "1"},
                 "The number of juveniles.",
                 {
                     "type": np.ndarray,
@@ -516,7 +520,7 @@ class LEffectModel(base.Component):
                 "GutsSurvivalReaches",
                 store,
                 self,
-                {"scales": "time/year, space/base_geometry, other/factor", "unit": "1"},
+                {"scales": "time/year, space/reach, other/factor", "unit": "1"},
                 "The probability of an individual to survive.",
                 {
                     "type": np.ndarray,
