@@ -10,7 +10,14 @@ import msgpack
 
 
 class LEffectModel(base.Component):
-    """Encapsulation of the LEffectModel module as a Landscape Model component."""
+    """
+    Encapsulation of the LEffectModel module as a Landscape Model component. The module provides two models: LGUTS and
+    LPop. LGUTS is a reduced GUTS model at catchment scale. It has two variants: GUTS-RED-IT, a reduced GUTS model
+    version with Individual Tolerance, and GUTS-RED-SD, a reduced GUTS version with Stochastic Death. LPop is a
+    DEB-based population model at catchment scale, parameterized for Asellus aquaticus. It makes use of the
+    GUTS- RED-IT or GUTS-RED-SD models. There is also an Abj-DEB version with population regulation through
+    density-dependent mortality.
+    """
     # RELEASES
     VERSION = base.VersionCollection(
         base.VersionInfo("2.1.4", "2023-09-13"),
@@ -174,183 +181,175 @@ class LEffectModel(base.Component):
         self._inputs = base.InputContainer(self, [
             base.Input(
                 "ProcessingPath",
-                (attrib.Class(str, 1), attrib.Unit(None, 1), attrib.Scales("global", 1)),
+                (attrib.Class(str), attrib.Unit(None), attrib.Scales("global")),
                 self.default_observer,
-                description="""The working directory for the module. It is used for all files prepared as module inputs
-                or generated as (temporary) module outputs."""
+                description="The working directory for the module. It is used for all files prepared as module inputs "
+                            " or generated as (temporary) module outputs."
             ),
             base.Input(
                 "Model",
                 (
-                    attrib.Class(str, 1),
-                    attrib.Unit(None, 1),
-                    attrib.Scales("global", 1),
+                    attrib.Class(str),
+                    attrib.Unit(None),
+                    attrib.Scales("global"),
                     attrib.InList(("CatchmentGUTSSD", "CatchmentGUTSIT", "LPopSD", "LPopIT"))
                 ),
                 self.default_observer,
-                description="""Specifies the model that is applied to the input data. This can either be an individual
-                based GUTS model (choices starting with _CatchmentGUTS_) or a population based effect model (choices
-                starting with _LPop_). The choice of model also determines whether sudden death (choices ending with 
-                _SD_) or an internal threshold (choices ending with _IT_) is assumed."""
+                description="Specifies the model that is applied to the input data. This can either be an individual "
+                            "based GUTS model (choices starting with `CatchmentGUTS`) or a population based effect "
+                            "model (choices starting with `LPop`). The choice of model also determines whether a"
+                            "stochastic death version (choices ending with `SD`) or an individual tolerance version "
+                            "(choices ending with `IT`) is used."
             ),
             base.Input(
                 "MinimumClutchSize",
-                (attrib.Class(int, 1), attrib.Unit(None, 1), attrib.Scales("global", 1)),
+                (attrib.Class(int), attrib.Unit("1"), attrib.Scales("global")),
                 self.default_observer,
-                description="The minimum clutch size (minClutchSize) used by population models."
+                description="Used by population models."
             ),
             base.Input(
                 "BackgroundMortalityRate",
-                (attrib.Class(float, 1), attrib.Unit("1/d", 1), attrib.Scales("global", 1)),
+                (attrib.Class(float), attrib.Unit("1/d"), attrib.Scales("global")),
                 self.default_observer,
-                description="The background mortality rate (backgroundMortality) used by population models."
+                description="Used by population models."
             ),
             base.Input(
                 "DensityDependentMortalityRate",
-                (attrib.Class(float, 1), attrib.Unit("m²/d", 1), attrib.Scales("global", 1)),
+                (attrib.Class(float), attrib.Unit("m²/d"), attrib.Scales("global")),
                 self.default_observer,
-                description="The density-dependent mortality rate (muDD) used by population models."
+                description="Used by population models."
             ),
             base.Input(
                 "DominantRateConstant",
-                (attrib.Class(float, 1), attrib.Unit("1/d", 1), attrib.Scales("global", 1)),
+                (attrib.Class(float), attrib.Unit("1/d"), attrib.Scales("global")),
                 self.default_observer,
-                description="The dominant rate constant (kd) used by all models."
+                description="Used by all models."
             ),
             base.Input(
                 "BackgroundHazardRate",
-                (attrib.Class(float, 1), attrib.Unit("1/d", 1), attrib.Scales("global", 1)),
+                (attrib.Class(float), attrib.Unit("1/d"), attrib.Scales("global")),
                 self.default_observer,
-                description="The background hazard rate (hb) used by all models."
+                description="Used by all models."
             ),
             base.Input(
                 "ParameterZOfSDModel",
-                (attrib.Class(float, 1), attrib.Unit("ng/l", 1), attrib.Scales("global", 1)),
+                (attrib.Class(float), attrib.Unit("ng/l"), attrib.Scales("global")),
                 self.default_observer,
-                description="The threshold concentration (z) used by sudden death models."
+                description="Used by stochastic death models."
             ),
             base.Input(
                 "ParameterBOfSDModel",
-                (attrib.Class(float, 1), attrib.Unit("l/(ng*d)"), attrib.Scales("global", 1)),
+                (attrib.Class(float), attrib.Unit("l/(ng*d)"), attrib.Scales("global")),
                 self.default_observer,
-                description="The killing rate (b) used by sudden death models."
+                description="Used by stochastic death models."
             ),
             base.Input(
                 "ThresholdOfITModel",
-                (attrib.Class(float, 1), attrib.Unit("ng/l", 1), attrib.Scales("global", 1)),
+                (attrib.Class(float), attrib.Unit("ng/l"), attrib.Scales("global")),
                 self.default_observer,
-                description="The threshold distribution  (m) used by internal threshold models."
+                description="Used by individual tolerance models."
             ),
             base.Input(
                 "BetaOfITModel",
-                (attrib.Class(float, 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
+                (attrib.Class(float), attrib.Unit("1"), attrib.Scales("global")),
                 self.default_observer,
-                description="The width of distribution (beta) used by internal threshold models."
+                description="Used by individual tolerance models."
             ),
             base.Input(
                 "AverageTemperatureParameterOfForcingFunction",
-                (attrib.Class(float, 1), attrib.Unit("°C", 1), attrib.Scales("global", 1)),
+                (attrib.Class(float), attrib.Unit("°C"), attrib.Scales("global")),
                 self.default_observer,
-                description="""The average temperature parameter of the forcing function (envTav) used by population
-                models."""
+                description="Used by population models."
             ),
             base.Input(
                 "AmplitudeTemperatureFluctuationsParameter",
-                (attrib.Class(float, 1), attrib.Unit("°C", 1), attrib.Scales("global", 1)),
+                (attrib.Class(float), attrib.Unit("°C"), attrib.Scales("global")),
                 self.default_observer,
-                description="""The amplitude temperature fluctuations parameter of the forcing function (envTamp) used
-                by population models."""
+                description="Used by population models."
             ),
             base.Input(
                 "ShiftForwardOfDayNumberWithLowestTemperature",
-                (attrib.Class(int, 1), attrib.Unit("d", 1), attrib.Scales("global", 1)),
+                (attrib.Class(int), attrib.Unit("d"), attrib.Scales("global")),
                 self.default_observer,
-                description="""The temporal shift forward with the lowest temperature (envTMinShift) used by population
-                models."""
+                description="Used by population models."
             ),
             base.Input(
                 "PerIndividualProbabilityOfMigration",
-                (attrib.Class(float, 1), attrib.Unit("1/d", 1), attrib.Scales("global", 1)),
+                (attrib.Class(float), attrib.Unit("1/d"), attrib.Scales("global")),
                 self.default_observer,
-                description="""The probability of an individual to migrate to an adjacent reach (migrationProb) used by
-                population models."""
+                description="Used by population models."
             ),
             base.Input(
                 "ProbabilityOfAMigratingIndividualToMoveDownstream",
-                (attrib.Class(float, 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
+                (attrib.Class(float), attrib.Unit("1"), attrib.Scales("global")),
                 self.default_observer,
-                description="""The probability of a migrating individual to migrate to the downstream reach (instead of
-                the upstream reach; downStreamProb) used by population models."""
+                description="Used by population models."
             ),
             base.Input(
                 "SimulationStart",
-                (attrib.Class(datetime.date, 1), attrib.Unit(None, 1), attrib.Scales("global", 1)),
+                (attrib.Class(datetime.date), attrib.Unit(None), attrib.Scales("global")),
                 self.default_observer,
-                description="""The first time step for which concentration input data is provided. This input also 
-                defines the base year for LEffectModel simulations. Actual simulation starts `NumberOfWarmUpYears`
-                earlier and ends `RecoveryPeriodYears` later."""
+                description="The first time step for which concentration input data is provided. This input also "
+                            "defines the base year for LEffectModel simulations. Actual simulation starts "
+                            "`NumberOfWarmUpYears` earlier and ends `RecoveryPeriodYears` later. This input will be "
+                            "removed in a future version of the `LEffectModule` component."
             ),
             base.Input(
                 "Concentrations",
-                (
-                    attrib.Class(np.ndarray, 1),
-                    attrib.Unit("ng/l", 1),
-                    attrib.Scales("time/hour, space/reach", 1)
-                ),
-                self.default_observer,
-                description="""The substance concentrations reported starting with the `SimulationStart`.
-                Concentrations during the warm-up years and during the recovery period are assumed to be globally 
-                zero."""
+                (attrib.Class(np.ndarray), attrib.Unit("ng/l"), attrib.Scales("time/hour, space/reach")),
+                self.default_observer
             ),
             base.Input(
                 "NumberOfWarmUpYears",
-                (attrib.Class(int, 1), attrib.Unit("y", 1), attrib.Scales("global", 1)),
-                self.default_observer,
-                description="The number of years the module runs before the year of the `SimulationStart`."
+                (attrib.Class(int), attrib.Unit("y"), attrib.Scales("global")),
+                self.default_observer
             ),
             base.Input(
                 "RecoveryPeriodYears",
                 (attrib.Class(int), attrib.Unit("y"), attrib.Scales("global")),
-                self.default_observer,
-                description="""The number of years the module runs after the last year for which `Concentration` data is
-                available."""
-            ),
-            base.Input(
-                "NumberOfStepsWithinOneHour",
-                (attrib.Class(int, 1), attrib.Unit("1", 1), attrib.Scales("global", 1)),
-                self.default_observer,
-                description="The number of steps within one hour used by the GUTS simulation."
-            ),
-            base.Input(
-                "MultiplicationFactors",
-                (attrib.Class(list[float], 1), attrib.Unit("1", 1), attrib.Scales("other/factor", 1)),
-                self.default_observer,
-                description="""The multiplication factors applied to enable LP50 analyses. Include a factor of 1 for
-                simulations returning unscaled LEffectModel results."""
-            ),
-            base.Input(
-                "Verbosity",
-                (attrib.Class(int, 1), attrib.Scales("global", 1), attrib.Unit(None)),
                 self.default_observer
             ),
             base.Input(
-                "NumberRuns",
-                (attrib.Class(int, 1), attrib.Scales("global", 1), attrib.Unit(None)),
+                "NumberOfStepsWithinOneHour",
+                (attrib.Class(int), attrib.Unit("1"), attrib.Scales("global")),
+                self.default_observer
+            ),
+            base.Input(
+                "MultiplicationFactors",
+                (attrib.Class(list[float]), attrib.Unit("1"), attrib.Scales("other/factor")),
                 self.default_observer,
-                description="The number of internal Monte Carlo runs performed by the module."
+                description="To determine LP50 values, the concentration multiplication factor leading to a 50% "
+                            "reduction of final survival in the GUTS model, simulations for all reaches are run "
+                            "applying a series of multiplication factors to the hourly concentration time series. "
+                            "Ideally, the full range from 0 to 100% effect (reduction of survival) should be covered, "
+                            "to ensure a reliable LP50 estimation by fitting a dose-response relationship. As a kind "
+                            "of brute-force approach, multiplication factors could be set according to a power "
+                            "function, e.g., ranging from 2^-10 to 2^15 (1/512 to 16384)."
+            ),
+            base.Input(
+                "Verbosity",
+                (attrib.Class(int), attrib.Scales("global"), attrib.Unit(None), attrib.InList((0, 1))),
+                self.default_observer,
+                description="If set to `1`, survival is reported per day, else only at the end of each simulated year. "
+                            "This affects only the output of the module, but not of the component. Vhanging this input "
+                            "is therefore mainly useful for debugging."
+            ),
+            base.Input(
+                "NumberRuns",
+                (attrib.Class(int), attrib.Scales("global"), attrib.Unit("1")),
+                self.default_observer
             ),
             base.Input(
                 "UseTemperatureInput",
                 (attrib.Class(bool), attrib.Scales("global"), attrib.Unit(None)),
                 self._defaultObserver,
-                description="Specifies whether the empirical water temperature data from the WaterTemperature input is "
-                "used or this data is ignored and a forcing function is applied instead."
+                description="Specifies, whether the empirical water temperature data from the `WaterTemperature` input "
+                            "is used or whether this data is ignored and a forcing function is applied, instead."
             ),
             base.Input(
                 "WaterTemperature",
                 (attrib.Class(np.ndarray), attrib.Scales("time/day"), attrib.Unit("°C")),
-                self._defaultObserver,
-                description="A timeseries of daily water temperatures. Only used if UseTemperatureInput is true."
+                self._defaultObserver
             )
         ])
         self._outputs = base.OutputContainer(self, [
@@ -540,6 +539,12 @@ class LEffectModel(base.Component):
                 }
             )
         ])
+        if self.default_observer:
+            self.default_observer.write_message(
+                3,
+                "The SimulationStart input will be removed in a future version of the CascadeToxswa component",
+                "The time offset will be retrieved from the metadata of the Concentrations input"
+            )
 
     def run(self):
         """
