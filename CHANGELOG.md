@@ -1,6 +1,20 @@
 # Changelog
 
-This is the changelog for the LEffectModel component. It was automatically created on 2023-09-13.
+This is the changelog for the LEffectModel component. It was automatically created on 2023-09-18.
+
+## [2.1.5] - 2023-09-18
+
+### Added
+
+- Runtime note regarding removal of SimulationStart input
+
+### Changed
+
+- Updated component description
+
+- Updated input descriptions and removed stub descriptions
+
+### Fixed
 
 ## [2.1.4] - 2023-09-13
 
