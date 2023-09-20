@@ -20,6 +20,7 @@ class LEffectModel(base.Component):
     """
     # RELEASES
     VERSION = base.VersionCollection(
+        base.VersionInfo("2.1.6", "2023-09-20"),
         base.VersionInfo("2.1.5", "2023-09-18"),
         base.VersionInfo("2.1.4", "2023-09-13"),
         base.VersionInfo("2.1.3", "2023-09-12"),
@@ -156,6 +157,8 @@ class LEffectModel(base.Component):
     VERSION.changed("2.1.5", "Updated component description")
     VERSION.changed("2.1.5", "Updated input descriptions and removed stub descriptions")
     VERSION.added("2.1.5", "Runtime note regarding removal of SimulationStart input")
+    VERSION.added("2.1.6", "Extended output descriptions")
+    VERSION.added("2.1.6", "Outputs with scale space/reach report geometries")
 
     def __init__(self, name, observer, store):
         """
