@@ -372,7 +372,9 @@ class LEffectModel(base.Component):
                         "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
                         "the `NumberRuns`"
                     ),
-                    "chunks": "for fast retrieval of time series"
+                    "chunks": "for fast retrieval of time series",
+                    "element_names": (None, "as specified by the `MultiplicationFactors` input", None),
+                    "offset": ("the year of the `SimulationStart` input", None, None)
                 }
             ),
             base.Output(
@@ -391,7 +393,15 @@ class LEffectModel(base.Component):
                         "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
                         "the `NumberRuns`"
                     ),
-                    "chunks": "for fast retrieval of time series"
+                    "chunks": "for fast retrieval of time series",
+                    "element_names": (
+                        None,
+                        "as specified by the `Concentrations` input",
+                        "as specified by the `MultiplicationFactors` input",
+                        None
+                    ),
+                    "offset": ("the year of the `SimulationStart` input", None, None, None),
+                    "geometries": (None, "as specified by the `Concentrations` input", None, None)
                 }
             ),
             base.Output(
@@ -409,7 +419,9 @@ class LEffectModel(base.Component):
                         "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
                         "the `NumberRuns`"
                     ),
-                    "chunks": "for fast retrieval of time series"
+                    "chunks": "for fast retrieval of time series",
+                    "element_names": (None, "as specified by the `MultiplicationFactors` input", None),
+                    "offset": ("the year of the `SimulationStart` input", None, None)
                 }
             ),
             base.Output(
@@ -428,7 +440,15 @@ class LEffectModel(base.Component):
                         "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
                         "the `NumberRuns`"
                     ),
-                    "chunks": "for fast retrieval of time series"
+                    "chunks": "for fast retrieval of time series",
+                    "element_names": (
+                        None,
+                        "as specified by the `Concentrations` input",
+                        "as specified by the `MultiplicationFactors` input",
+                        None
+                    ),
+                    "offset": ("the year of the `SimulationStart` input", None, None, None),
+                    "geometries": (None, "as specified by the `Concentrations` input", None, None)
                 }
             ),
             base.Output(
@@ -446,7 +466,9 @@ class LEffectModel(base.Component):
                         "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
                         "the `NumberRuns`"
                     ),
-                    "chunks": "for fast retrieval of time series"
+                    "chunks": "for fast retrieval of time series",
+                    "element_names": (None, "as specified by the `MultiplicationFactors` input", None),
+                    "offset": ("the year of the `SimulationStart` input", None, None)
                 }
             ),
             base.Output(
@@ -464,7 +486,9 @@ class LEffectModel(base.Component):
                         "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
                         "the `NumberRuns`"
                     ),
-                    "chunks": "for fast retrieval of time series"
+                    "chunks": "for fast retrieval of time series",
+                    "element_names": (None, "as specified by the `MultiplicationFactors` input", None),
+                    "offset": ("the year of the `SimulationStart` input", None, None)
                 }
             ),
             base.Output(
@@ -483,7 +507,15 @@ class LEffectModel(base.Component):
                         "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
                         "the `NumberRuns`"
                     ),
-                    "chunks": "for fast retrieval of time series"
+                    "chunks": "for fast retrieval of time series",
+                    "element_names": (
+                        None,
+                        "as specified by the `Concentrations` input",
+                        "as specified by the `MultiplicationFactors` input",
+                        None
+                    ),
+                    "offset": ("the year of the `SimulationStart` input", None, None, None),
+                    "geometries": (None, "as specified by the `Concentrations` input", None, None)
                 }
             ),
             base.Output(
@@ -501,7 +533,9 @@ class LEffectModel(base.Component):
                         "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
                         "the `NumberRuns`"
                     ),
-                    "chunks": "for fast retrieval of time series"
+                    "chunks": "for fast retrieval of time series",
+                    "element_names": (None, "as specified by the `MultiplicationFactors` input", None),
+                    "offset": ("the year of the `SimulationStart` input", None, None)
                 }
             ),
             base.Output(
@@ -520,7 +554,15 @@ class LEffectModel(base.Component):
                         "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input",
                         "the `NumberRuns`"
                     ),
-                    "chunks": "for fast retrieval of time series"
+                    "chunks": "for fast retrieval of time series",
+                    "element_names": (
+                        None,
+                        "as specified by the `Concentrations` input",
+                        "as specified by the `MultiplicationFactors` input",
+                        None
+                    ),
+                    "offset": ("the year of the `SimulationStart` input", None, None, None),
+                    "geometries": (None, "as specified by the `Concentrations` input", None, None)
                 }
             ),
             base.Output(
@@ -539,7 +581,14 @@ class LEffectModel(base.Component):
                         "the number of reaches reported by the [Concentrations](#Concentrations) input",
                         "the number of items in the [MultiplicationFactors](#MultiplicationFactors) input"
                     ),
-                    "chunks": "for allowing compression (only one chunk used)"
+                    "chunks": "for allowing compression (only one chunk used)",
+                    "element_names": (
+                        None,
+                        "as specified by the `Concentrations` input",
+                        "as specified by the `MultiplicationFactors` input",
+                    ),
+                    "offset": ("the year of the `SimulationStart` input", None, None),
+                    "geometries": (None, "as specified by the `Concentrations` input", None)
                 }
             )
         ])
@@ -1085,7 +1134,8 @@ class LEffectModel(base.Component):
                     self.inputs["MultiplicationFactors"].describe()["element_names"][0],
                     None
                 ),
-                offset=(first_year, None, None, None)
+                offset=(first_year, None, None, None),
+                geometries=(None, self.inputs["Concentrations"].describe()["geometries"][1], None, None)
             )
             for multiplication_factor in range(1, number_multiplication_factors + 1):
                 for run in range(1, number_runs + 1):
@@ -1139,7 +1189,8 @@ class LEffectModel(base.Component):
                     self.inputs["Concentrations"].describe()["element_names"][1],
                     self.inputs["MultiplicationFactors"].describe()["element_names"][0]
                 ),
-                offset=(first_year, None, None)
+                offset=(first_year, None, None),
+                geometries=(None, self.inputs["Concentrations"].describe()["geometries"][1], None)
             )
 
     def prepare_water_temperatures(
