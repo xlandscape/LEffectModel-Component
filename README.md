@@ -23,16 +23,16 @@ DEB-based population model at catchment scale, parameterized for Asellus aquatic
 GUTS- RED-IT or GUTS-RED-SD models. There is also an Abj-DEB version with population regulation through
 density-dependent mortality.  
 This is an automatically generated documentation based on the available code and in-line documentation. The current
-version of this document is from 2023-09-18.
+version of this document is from 2023-09-20.
 
 ### Built with
 
-* Landscape Model core version 1.15.5
+* Landscape Model core version 1.15.8
 * LEffectModel version 20211111-1 (see `\module\doc\LEffectModel_Manual_20211111.pdf` for details)
 
 ## Getting Started
 
-The component can be used in any Landscape Model based on core version 1.15.5 or newer. See the Landscape
+The component can be used in any Landscape Model based on core version 1.15.8 or newer. See the Landscape
 Model core's `README` for general tips on how to add a component to a Landscape Model.
 
 ### Prerequisites
@@ -307,142 +307,133 @@ Values of the `UseTemperatureInput` input may not have a physical unit.
 Values have to refer to the `time/day` scale.
 The physical unit of the `WaterTemperature` input values is `°C`.
 
+
 ### Outputs
 #### AdultMetaPopulation
-The total number of all adults.  
-Values are expectedly of type `ndarray`.
-Value representation is in a 3-dimensional array.
-Dimension 1 spans the total number of days in the years at least partly covered by the 
+The total number of all adults.
+- Data Type: `int`
+- Scales: `time/day, other/factor, other/runs`
+- Unit: `1`
+- Type: `numpy.ndarray`
+- Shape: `time/day`: the total number of days in the years at least partly covered by the 
                         [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
-                        the recovery period.
-Dimension 2 spans the number of items in the [MultiplicationFactors](#MultiplicationFactors) input.
-Dimension 3 spans the `NumberRuns`.
-Chunking of the array is for fast retrieval of time series.
-Individual array elements have a type of `int`.
-The values apply to the following scale: `time/day, other/factor, other/runs`.
-The physical unit of the values is `1`.
+                        the recovery period, `other/factor`: the number of items in the [MultiplicationFactors](#MultiplicationFactors) input, `other/runs`: the `NumberRuns`
+- Chunks: for fast retrieval of time series
+- Element_Names: `time/day`: None, `other/factor`: as specified by the `MultiplicationFactors` input, `other/runs`: None
+- Offset: `time/day`: the year of the `SimulationStart` input, `other/factor`: None, `other/runs`: None
 #### AdultPopulationByReach
-The number of adults.  
-Values are expectedly of type `ndarray`.
-Value representation is in a 4-dimensional array.
-Dimension 1 spans the total number of days in the years at least partly covered by the 
+The number of adults.
+- Data Type: `int`
+- Scales: `time/day, space/reach, other/factor, other/runs`
+- Unit: `1`
+- Type: `numpy.ndarray`
+- Shape: `time/day`: the total number of days in the years at least partly covered by the 
                         [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
-                        the recovery period.
-Dimension 2 spans the number of reaches reported by the [Concentrations](#Concentrations) input.
-Dimension 3 spans the number of items in the [MultiplicationFactors](#MultiplicationFactors) input.
-Dimension 4 spans the `NumberRuns`.
-Chunking of the array is for fast retrieval of time series.
-Individual array elements have a type of `int`.
-The values apply to the following scale: `time/day, space/reach, other/factor, other/runs`.
-The physical unit of the values is `1`.
+                        the recovery period, `space/reach`: the number of reaches reported by the [Concentrations](#Concentrations) input, `other/factor`: the number of items in the [MultiplicationFactors](#MultiplicationFactors) input, `other/runs`: the `NumberRuns`
+- Chunks: for fast retrieval of time series
+- Element_Names: `time/day`: None, `space/reach`: as specified by the `Concentrations` input, `other/factor`: as specified by the `MultiplicationFactors` input, `other/runs`: None
+- Offset: `time/day`: the year of the `SimulationStart` input, `space/reach`: None, `other/factor`: None, `other/runs`: None
+- Geometries: `time/day`: None, `space/reach`: as specified by the `Concentrations` input, `other/factor`: None, `other/runs`: None
 #### EmbryoMetaPopulation
-The total number of all embryos.  
-Values are expectedly of type `ndarray`.
-Value representation is in a 3-dimensional array.
-Dimension 1 spans the total number of days in the years at least partly covered by the 
+The total number of all embryos.
+- Data Type: `int`
+- Scales: `time/day, other/factor, other/runs`
+- Unit: `1`
+- Type: `numpy.ndarray`
+- Shape: `time/day`: the total number of days in the years at least partly covered by the 
                         [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
-                        the recovery period.
-Dimension 2 spans the number of items in the [MultiplicationFactors](#MultiplicationFactors) input.
-Dimension 3 spans the `NumberRuns`.
-Chunking of the array is for fast retrieval of time series.
-Individual array elements have a type of `int`.
-The values apply to the following scale: `time/day, other/factor, other/runs`.
-The physical unit of the values is `1`.
+                        the recovery period, `other/factor`: the number of items in the [MultiplicationFactors](#MultiplicationFactors) input, `other/runs`: the `NumberRuns`
+- Chunks: for fast retrieval of time series
+- Element_Names: `time/day`: None, `other/factor`: as specified by the `MultiplicationFactors` input, `other/runs`: None
+- Offset: `time/day`: the year of the `SimulationStart` input, `other/factor`: None, `other/runs`: None
 #### EmbryoPopulationByReach
-The number of embryos.  
-Values are expectedly of type `ndarray`.
-Value representation is in a 4-dimensional array.
-Dimension 1 spans the total number of days in the years at least partly covered by the 
+The number of embryos.
+- Data Type: `int`
+- Scales: `time/day, space/reach, other/factor, other/runs`
+- Unit: `1`
+- Type: `numpy.ndarray`
+- Shape: `time/day`: the total number of days in the years at least partly covered by the 
                         [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
-                        the recovery period.
-Dimension 2 spans the number of reaches reported by the [Concentrations](#Concentrations) input.
-Dimension 3 spans the number of items in the [MultiplicationFactors](#MultiplicationFactors) input.
-Dimension 4 spans the `NumberRuns`.
-Chunking of the array is for fast retrieval of time series.
-Individual array elements have a type of `int`.
-The values apply to the following scale: `time/day, space/reach, other/factor, other/runs`.
-The physical unit of the values is `1`.
+                        the recovery period, `space/reach`: the number of reaches reported by the [Concentrations](#Concentrations) input, `other/factor`: the number of items in the [MultiplicationFactors](#MultiplicationFactors) input, `other/runs`: the `NumberRuns`
+- Chunks: for fast retrieval of time series
+- Element_Names: `time/day`: None, `space/reach`: as specified by the `Concentrations` input, `other/factor`: as specified by the `MultiplicationFactors` input, `other/runs`: None
+- Offset: `time/day`: the year of the `SimulationStart` input, `space/reach`: None, `other/factor`: None, `other/runs`: None
+- Geometries: `time/day`: None, `space/reach`: as specified by the `Concentrations` input, `other/factor`: None, `other/runs`: None
 #### ExtantLocalPopulationsMetaPopulation
-The total number of populations that went extant.  
-Values are expectedly of type `ndarray`.
-Value representation is in a 3-dimensional array.
-Dimension 1 spans the total number of days in the years at least partly covered by the 
+The total number of populations that went extant.
+- Data Type: `int`
+- Scales: `time/day, other/factor, other/runs`
+- Unit: `1`
+- Type: `numpy.ndarray`
+- Shape: `time/day`: the total number of days in the years at least partly covered by the 
                         [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
-                        the recovery period.
-Dimension 2 spans the number of items in the [MultiplicationFactors](#MultiplicationFactors) input.
-Dimension 3 spans the `NumberRuns`.
-Chunking of the array is for fast retrieval of time series.
-Individual array elements have a type of `int`.
-The values apply to the following scale: `time/day, other/factor, other/runs`.
-The physical unit of the values is `1`.
+                        the recovery period, `other/factor`: the number of items in the [MultiplicationFactors](#MultiplicationFactors) input, `other/runs`: the `NumberRuns`
+- Chunks: for fast retrieval of time series
+- Element_Names: `time/day`: None, `other/factor`: as specified by the `MultiplicationFactors` input, `other/runs`: None
+- Offset: `time/day`: the year of the `SimulationStart` input, `other/factor`: None, `other/runs`: None
 #### JuvenileAndAdultMetaPopulation
-The total number of all adults and juveniles combined.  
-Values are expectedly of type `ndarray`.
-Value representation is in a 3-dimensional array.
-Dimension 1 spans the total number of days in the years at least partly covered by the 
+The total number of all adults and juveniles combined.
+- Data Type: `int`
+- Scales: `time/day, other/factor, other/runs`
+- Unit: `1`
+- Type: `numpy.ndarray`
+- Shape: `time/day`: the total number of days in the years at least partly covered by the 
                         [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
-                        the recovery period.
-Dimension 2 spans the number of items in the [MultiplicationFactors](#MultiplicationFactors) input.
-Dimension 3 spans the `NumberRuns`.
-Chunking of the array is for fast retrieval of time series.
-Individual array elements have a type of `int`.
-The values apply to the following scale: `time/day, other/factor, other/runs`.
-The physical unit of the values is `1`.
+                        the recovery period, `other/factor`: the number of items in the [MultiplicationFactors](#MultiplicationFactors) input, `other/runs`: the `NumberRuns`
+- Chunks: for fast retrieval of time series
+- Element_Names: `time/day`: None, `other/factor`: as specified by the `MultiplicationFactors` input, `other/runs`: None
+- Offset: `time/day`: the year of the `SimulationStart` input, `other/factor`: None, `other/runs`: None
 #### JuvenileAndAdultPopulationByReach
-The number of juveniles and adults combined.  
-Values are expectedly of type `ndarray`.
-Value representation is in a 4-dimensional array.
-Dimension 1 spans the total number of days in the years at least partly covered by the 
+The number of juveniles and adults combined.
+- Data Type: `int`
+- Scales: `time/day, space/reach, other/factor, other/runs`
+- Unit: `1`
+- Type: `numpy.ndarray`
+- Shape: `time/day`: the total number of days in the years at least partly covered by the 
                         [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
-                        the recovery period.
-Dimension 2 spans the number of reaches reported by the [Concentrations](#Concentrations) input.
-Dimension 3 spans the number of items in the [MultiplicationFactors](#MultiplicationFactors) input.
-Dimension 4 spans the `NumberRuns`.
-Chunking of the array is for fast retrieval of time series.
-Individual array elements have a type of `int`.
-The values apply to the following scale: `time/day, space/reach, other/factor, other/runs`.
-The physical unit of the values is `1`.
+                        the recovery period, `space/reach`: the number of reaches reported by the [Concentrations](#Concentrations) input, `other/factor`: the number of items in the [MultiplicationFactors](#MultiplicationFactors) input, `other/runs`: the `NumberRuns`
+- Chunks: for fast retrieval of time series
+- Element_Names: `time/day`: None, `space/reach`: as specified by the `Concentrations` input, `other/factor`: as specified by the `MultiplicationFactors` input, `other/runs`: None
+- Offset: `time/day`: the year of the `SimulationStart` input, `space/reach`: None, `other/factor`: None, `other/runs`: None
+- Geometries: `time/day`: None, `space/reach`: as specified by the `Concentrations` input, `other/factor`: None, `other/runs`: None
 #### JuvenileMetaPopulation
-The total number of all juveniles.  
-Values are expectedly of type `ndarray`.
-Value representation is in a 3-dimensional array.
-Dimension 1 spans the total number of days in the years at least partly covered by the 
+The total number of all juveniles.
+- Data Type: `int`
+- Scales: `time/day, other/factor, other/runs`
+- Unit: `1`
+- Type: `numpy.ndarray`
+- Shape: `time/day`: the total number of days in the years at least partly covered by the 
                         [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
-                        the recovery period.
-Dimension 2 spans the number of items in the [MultiplicationFactors](#MultiplicationFactors) input.
-Dimension 3 spans the `NumberRuns`.
-Chunking of the array is for fast retrieval of time series.
-Individual array elements have a type of `int`.
-The values apply to the following scale: `time/day, other/factor, other/runs`.
-The physical unit of the values is `1`.
+                        the recovery period, `other/factor`: the number of items in the [MultiplicationFactors](#MultiplicationFactors) input, `other/runs`: the `NumberRuns`
+- Chunks: for fast retrieval of time series
+- Element_Names: `time/day`: None, `other/factor`: as specified by the `MultiplicationFactors` input, `other/runs`: None
+- Offset: `time/day`: the year of the `SimulationStart` input, `other/factor`: None, `other/runs`: None
 #### JuvenilePopulationByReach
-The number of juveniles.  
-Values are expectedly of type `ndarray`.
-Value representation is in a 4-dimensional array.
-Dimension 1 spans the total number of days in the years at least partly covered by the 
+The number of juveniles.
+- Data Type: `int`
+- Scales: `time/day, space/reach, other/factor, other/runs`
+- Unit: `1`
+- Type: `numpy.ndarray`
+- Shape: `time/day`: the total number of days in the years at least partly covered by the 
                         [Concentrations](#Concentrations) input plus the years of the warm-up period plus the years of 
-                        the recovery period.
-Dimension 2 spans the number of reaches reported by the [Concentrations](#Concentrations) input.
-Dimension 3 spans the number of items in the [MultiplicationFactors](#MultiplicationFactors) input.
-Dimension 4 spans the `NumberRuns`.
-Chunking of the array is for fast retrieval of time series.
-Individual array elements have a type of `int`.
-The values apply to the following scale: `time/day, space/reach, other/factor, other/runs`.
-The physical unit of the values is `1`.
+                        the recovery period, `space/reach`: the number of reaches reported by the [Concentrations](#Concentrations) input, `other/factor`: the number of items in the [MultiplicationFactors](#MultiplicationFactors) input, `other/runs`: the `NumberRuns`
+- Chunks: for fast retrieval of time series
+- Element_Names: `time/day`: None, `space/reach`: as specified by the `Concentrations` input, `other/factor`: as specified by the `MultiplicationFactors` input, `other/runs`: None
+- Offset: `time/day`: the year of the `SimulationStart` input, `space/reach`: None, `other/factor`: None, `other/runs`: None
+- Geometries: `time/day`: None, `space/reach`: as specified by the `Concentrations` input, `other/factor`: None, `other/runs`: None
 #### GutsSurvivalReaches
-The probability of an individual to survive.  
-Values are expectedly of type `ndarray`.
-Individual array elements have a type of `float`.
-Value representation is in a 3-dimensional array.
-Dimension 1 spans the number of years at least partly covered by the [Concentrations](#Concentrations) input 
+The probability of an individual to survive.
+- Scales: `time/year, space/reach, other/factor`
+- Unit: `1`
+- Type: `numpy.ndarray`
+- Data_Type: `float`
+- Shape: `time/year`: the number of years at least partly covered by the [Concentrations](#Concentrations) input 
                         plus the number of years of the warm-up period plus the number of years of the recovery 
-                        period.
-Dimension 2 spans the number of reaches reported by the [Concentrations](#Concentrations) input.
-Dimension 3 spans the number of items in the [MultiplicationFactors](#MultiplicationFactors) input.
-Chunking of the array is for allowing compression (only one chunk used).
-The values apply to the following scale: `time/year, space/reach, other/factor`.
-The physical unit of the values is `1`.
-
+                        period, `space/reach`: the number of reaches reported by the [Concentrations](#Concentrations) input, `other/factor`: the number of items in the [MultiplicationFactors](#MultiplicationFactors) input
+- Chunks: for allowing compression (only one chunk used)
+- Element_Names: `time/year`: None, `space/reach`: as specified by the `Concentrations` input, `other/factor`: as specified by the `MultiplicationFactors` input
+- Offset: `time/year`: the year of the `SimulationStart` input, `space/reach`: None, `other/factor`: None
+- Geometries: `time/year`: None, `space/reach`: as specified by the `Concentrations` input, `other/factor`: None
 ## Roadmap
 
 The following changes will be part of future `LEffectModel` versions:
