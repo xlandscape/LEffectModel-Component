@@ -7,6 +7,20 @@ import base
 import datetime
 import attrib
 import msgpack
+import time
+
+
+def retry_rename(src, dst, retries=5, delay=1.0):
+    """Rename with retry logic for Windows file locking issues."""
+    for attempt in range(retries):
+        try:
+            os.rename(src, dst)
+            return
+        except PermissionError:
+            if attempt < retries - 1:
+                time.sleep(delay)
+            else:
+                raise
 
 
 class LEffectModel(base.Component):
@@ -715,12 +729,12 @@ class LEffectModel(base.Component):
                 )
                 self.run_module(processing_path)
                 # noinspection SpellCheckingInspection
-                os.rename(
+                retry_rename(
                     os.path.join(processing_path, "ecotalk", f"{model}ModelSystem_MoS.modelscript"),
                     os.path.join(processing_path, "ecotalk", f"{model}ModelSystem_MoS.modelscript.{y}")
                 )
                 # noinspection SpellCheckingInspection
-                os.rename(
+                retry_rename(
                     os.path.join(processing_path, "ecotalk", f"{model}ModelSystem_MoS"),
                     os.path.join(processing_path, "ecotalk", f"{model}ModelSystem_MoS_{y}")
                 )
